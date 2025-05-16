@@ -1,0 +1,104 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="text-center mb-4">Log in</h2>
+                <p class="text-center mb-4">Please log in to continue</p>
+
+                <form id="account" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3"></div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" />
+                        <label asp-for="Input.Email">Email</label>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Password" class="form-control" placeholder="Password" />
+                        <label asp-for="Input.Password">Password</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                            <label asp-for="Input.RememberMe" class="form-check-label">Remember Me</label>
+                        </div>
+                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
+
+                    <div class="text-center">
+                        <p>Don't have an account? <a asp-page="./Register">Register</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Toggle password visibility
+            $(".toggle-password").click(function() {
+                $(this).toggleClass("fa-eye fa-eye-slash");
+                var input = $($(this).attr("toggle"));
+                if (input.attr("type") == "password") {
+                    input.attr("type", "text");
+                } else {
+                    input.attr("type", "password");
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    .btn-primary {
+        background-color: #ff6b6b;
+        border-color: #ff6b6b;
+    }
+    
+    .btn-primary:hover {
+        background-color: #ff5252;
+        border-color: #ff5252;
+    }
+
+    a {
+        color: #ff6b6b;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #ff5252;
+    }
+
+    .form-control:focus {
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 0.25rem rgba(255, 107, 107, 0.25);
+    }
+
+    .form-check-input:checked {
+        background-color: #ff6b6b;
+        border-color: #ff6b6b;
+    }
+
+    .form-control {
+        color: #000 !important;
+    }
+
+    .form-control::placeholder {
+        color: #6c757d;
+    }
+</style>

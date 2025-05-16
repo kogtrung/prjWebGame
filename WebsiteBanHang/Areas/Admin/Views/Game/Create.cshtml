@@ -1,0 +1,187 @@
+@model WebGame.Models.Game
+
+@{
+    ViewData["Title"] = "Thêm Game Mới";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-gamepad me-2"></i>Thêm Game Mới
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["Success"]
+                        </div>
+                    }
+                    
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <h5>Có lỗi xảy ra:</h5>
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            
+                            @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+                            {
+                                <ul>
+                                    @foreach (var error in ViewData.ModelState[""].Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    }
+
+                    <form asp-action="Create" enctype="multipart/form-data" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Title" class="form-label">Tên Game</label>
+                                    <input asp-for="Title" class="form-control" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Description" class="form-label">Mô tả</label>
+                                    <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="ReleaseDate" class="form-label">Ngày phát hành</label>
+                                            <input asp-for="ReleaseDate" class="form-control" type="date" />
+                                            <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="MetaScore" class="form-label">Điểm đánh giá (0-100)</label>
+                                            <input asp-for="MetaScore" class="form-control" min="0" max="100" type="number" />
+                                            <span asp-validation-for="MetaScore" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Developer" class="form-label">Nhà phát triển</label>
+                                            <input asp-for="Developer" class="form-control" />
+                                            <span asp-validation-for="Developer" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Publisher" class="form-label">Nhà phát hành</label>
+                                            <input asp-for="Publisher" class="form-control" />
+                                            <span asp-validation-for="Publisher" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Genre" class="form-label">Thể loại</label>
+                                            <select asp-for="Genre" class="form-select" asp-items="ViewBag.Genres">
+                                                <option value="">-- Chọn thể loại --</option>
+                                            </select>
+                                            <span asp-validation-for="Genre" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Rating" class="form-label">Xếp hạng tuổi</label>
+                                            <select asp-for="Rating" class="form-select">
+                                                <option value="">-- Chọn xếp hạng --</option>
+                                                <option value="E">E (Everyone)</option>
+                                                <option value="E10+">E10+ (Everyone 10+)</option>
+                                                <option value="T">T (Teen)</option>
+                                                <option value="M">M (Mature 17+)</option>
+                                                <option value="A">A (Adult 18+)</option>
+                                            </select>
+                                            <span asp-validation-for="Rating" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Nền tảng</label>
+                                    <select name="SelectedPlatforms" multiple class="form-select" asp-items="ViewBag.Platforms">
+                                    </select>
+                                    <small class="text-muted">Giữ Ctrl để chọn nhiều nền tảng</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Ảnh game</label>
+                                    <div class="input-group mb-3">
+                                        <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*" />
+                                    </div>
+                                    <div class="card mt-3 mb-3 d-none" id="imagePreviewCard">
+                                        <div class="card-body text-center p-2">
+                                            <img id="imagePreview" class="img-fluid rounded" style="max-height: 200px;" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="TrailerUrl" class="form-label">Video Trailer (YouTube URL)</label>
+                                    <input asp-for="TrailerUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
+                                    <small class="text-muted">Nhập link YouTube (hỗ trợ cả dạng youtu.be và youtube.com)</small>
+                                    <span asp-validation-for="TrailerUrl" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Lưu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Xem trước ảnh khi chọn file
+        document.getElementById('ImageFile').addEventListener('change', function (e) {
+            const preview = document.getElementById('imagePreview');
+            const previewCard = document.getElementById('imagePreviewCard');
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                    previewCard.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                previewCard.classList.add('d-none');
+            }
+        });
+    </script>
+} 

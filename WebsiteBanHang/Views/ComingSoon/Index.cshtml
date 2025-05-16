@@ -1,0 +1,219 @@
+@model Dictionary<dynamic, List<WebGame.Models.Game>>
+
+@{
+    ViewData["Title"] = "Coming Soon";
+}
+
+<div class="container mt-4">
+    <div class="header-section mb-4">
+        <h2 class="section-title">COMING SOON</h2>
+        <div class="section-underline"></div>
+        <p class="section-description">Games scheduled for future release</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <h4 class="alert-heading">No upcoming games</h4>
+            <p>There are no games scheduled for release at this time. Check back later for updates!</p>
+        </div>
+    }
+
+    else
+    {
+        @foreach (var monthGroup in Model)
+        {
+            var monthDate = (DateTime)monthGroup.Key;
+            var monthName = monthDate.ToString("MMMM yyyy");
+            var isCurrentMonth = monthDate.Month == DateTime.Now.Month && monthDate.Year == DateTime.Now.Year;
+            
+            <div class="month-section mb-5">
+                <h2 class="month-title mb-4 @(isCurrentMonth ? "current-month" : "")" style="color: black;">
+                    @monthName
+                    @if (isCurrentMonth)
+                    {
+                        <span class="badge bg-primary ms-2">This Month</span>
+                    }
+                </h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    @foreach (var game in monthGroup.Value)
+                    {
+                        var daysUntilRelease = game.ReleaseDate.HasValue ? (game.ReleaseDate.Value - DateTime.Now).Days : 0;
+                        var comingSoonText = daysUntilRelease <= 7 ? "Coming this week!" : 
+                                            daysUntilRelease <= 14 ? "Coming soon!" : "";
+                        
+                        <div class="col">
+                            <div class="card h-100 bg-dark text-white border-0 game-card">
+                                <a href="@Url.Action("Details", "Game", new { id = game.Id })" class="text-decoration-none">
+                                    <div class="position-relative">
+                                        <img src="@game.ImageUrl" class="card-img-top" alt="@game.Title"
+                                            onerror="this.onerror=null; this.src='/images/game-placeholder.jpg';">
+                                        @if (game.MetaScore > 0)
+                                        {
+                                            <div class="metascore @(game.MetaScore >= 90 ? "metascore-high" : game.MetaScore >= 75 ? "metascore-medium" : "metascore-low")">
+                                                @game.MetaScore
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrEmpty(comingSoonText))
+                                        {
+                                            <div class="coming-soon-badge">@comingSoonText</div>
+                                        }
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title text-white mb-1">@game.Title</h5>
+                                        <p class="card-text text-muted mb-2">
+                                            <i class="far fa-calendar-alt me-1"></i> @(game.ReleaseDate.HasValue ? game.ReleaseDate.Value.ToString("MMM d, yyyy") : "TBA")
+                                            @if (daysUntilRelease > 0)
+                                            {
+                                                <span class="ms-1 text-secondary">(@daysUntilRelease days left)</span>
+                                            }
+                                        </p>
+                                        <div class="game-platform-container">
+                                            @await Html.PartialAsync("_PlatformDisplay", game)
+                                        </div>
+                                        <div class="game-info mt-2">
+                                            <span class="text-muted small">
+                                                @if (!string.IsNullOrEmpty(game.Developer))
+                                                {
+                                                    <span class="me-2">@game.Developer</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(game.Genre))
+                                                {
+                                                    <span>@game.Genre</span>
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    .game-card {
+        transition: transform 0.2s;
+        background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .game-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .game-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+
+    .game-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+
+    .month-title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 0.5rem;
+        position: relative;
+    }
+
+    .month-title.current-month {
+        border-bottom-color: #2ecc71;
+    }
+
+    .game-platform-container {
+        margin: 10px 0;
+    }
+
+    .platform-badge {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: black;
+        background: #2c3e50;
+    }
+
+    .platform-badge i {
+        margin-right: 4px;
+    }
+
+    .platform-badge.pc {
+        background: #333;
+    }
+
+    .platform-badge.playstation-5, .platform-badge.playstation-4 {
+        background: #006FCD;
+    }
+
+    .platform-badge.xbox-series-x {
+        background: #107C10;
+    }
+
+    .platform-badge.nintendo-switch {
+        background: #E60012;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .metascore {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        font-weight: 600;
+        color: white;
+        z-index: 2;
+    }
+
+    .metascore-high {
+        background: #2ecc71;
+    }
+
+    .metascore-medium {
+        background: #f1c40f;
+    }
+
+    .metascore-low {
+        background: #e74c3c;
+    }
+
+    .coming-soon-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #e74c3c;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    .game-info {
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 8px;
+    }
+</style> 

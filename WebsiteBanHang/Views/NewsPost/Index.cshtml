@@ -1,0 +1,40 @@
+﻿@model IEnumerable<WebGame.Models.NewsPost>
+@{
+    ViewData["Title"] = "Quản lý bài viết";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (User.IsInRole("Admin")){
+<h2>Quản lý bài viết</h2>
+<form method="get" asp-action="Index" class="mb-3 d-flex" style="max-width: 400px;">
+    <input name="search" class="form-control me-2" placeholder="Tìm bài viết..." value="@ViewBag.Search" />
+    <button type="submit" class="btn btn-outline-success">Tìm</button>
+</form>
+<a asp-action="Add" class="btn btn-success mb-3">Thêm bài viết</a>
+
+<table class="table table-bordered bg-white text-dark">
+    <thead>
+        <tr>
+            <th>Tiêu đề</th>
+            <th>Ngày tạo</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model)
+        {
+            <tr>
+                <td>@post.Title</td>
+                <td>@post.CreatedAt.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <a asp-action="Update" asp-route-id="@post.Id" class="btn btn-warning btn-sm">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@post.Id" class="btn btn-danger btn-sm">Xoá</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+else
+{
+	<p class="text-danger">Bạn không có quyền quản lý bài viết.</p>
+}

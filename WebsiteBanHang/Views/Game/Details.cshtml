@@ -1,0 +1,715 @@
+@model WebGame.Models.Game
+
+@{
+    ViewData["Title"] = Model.Title;
+    var isUpcoming = Model.ReleaseDate.HasValue && DateTime.Today < Model.ReleaseDate;
+    var daysUntilRelease = isUpcoming && Model.ReleaseDate.HasValue ? (Model.ReleaseDate.Value - DateTime.Today).Days : 0;
+}
+
+<style>
+    .game-header {
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('@Model.ImageUrl');
+        background-size: cover;
+        background-position: center;
+        padding: 40px 0;
+        color: white;
+        margin-bottom: 30px;
+    }
+
+    .score-display {
+        text-align: center;
+        padding: 10px;
+    }
+
+    .metascore, .userscore {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: bold;
+        border-radius: 8px;
+        margin: 0 auto 5px;
+    }
+
+        .metascore.excellent {
+            background-color: #6c3;
+        }
+
+        .metascore.good {
+            background-color: #fc3;
+        }
+
+        .metascore.mixed {
+            background-color: #f00;
+        }
+
+        .userscore.excellent {
+            background-color: #6c3;
+        }
+
+        .userscore.good {
+            background-color: #fc3;
+        }
+
+        .userscore.mixed {
+            background-color: #f00;
+        }
+
+    .score-label {
+        font-size: 14px;
+        color: #aaa;
+    }
+
+    .game-info-section {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .where-to-buy {
+        background-color: white;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: hidden;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+    
+    .where-to-buy .section-title {
+        color: white;
+        background-color: #007bff;
+        padding: 12px 15px;
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        border-bottom: none;
+        display: flex;
+        align-items: center;
+    }
+    
+    .where-to-buy .section-title i {
+        margin-right: 10px;
+    }
+    
+    .store-cards-container {
+        border: 1px solid #e9e9e9;
+        border-top: none;
+    }
+    
+    .where-to-buy .card {
+        border: none;
+        border-bottom: 1px solid #e9e9e9;
+        border-radius: 0;
+        margin-bottom: 0;
+        background-color: white;
+    }
+    
+    .where-to-buy .card:last-child {
+        border-bottom: none;
+    }
+    
+    .store-card {
+        margin-bottom: 0;
+    }
+    
+    .store-card a {
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .store-card .card-body {
+        padding: 15px 20px;
+    }
+    
+    .store-card h6 {
+        margin-bottom: 5px;
+        font-weight: 600;
+        font-size: 16px;
+    }
+    
+    .store-card .text-primary {
+        color: #007bff !important;
+        font-size: 18px;
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #eee;
+    }
+
+    .game-details {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .detail-label {
+        font-weight: bold;
+        color: #666;
+    }
+
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+        }
+
+    .reviews-section {
+        margin-top: 30px;
+    }
+
+    .review-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .review-score {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        border-radius: 6px;
+    }
+
+    .comparison-item {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .comparison-score {
+        font-size: 48px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    .comparison-count {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .game-info-section input.form-control,
+    .game-info-section textarea.form-control {
+        color: #333 !important;
+        background-color: #fff;
+    }
+
+        .game-info-section input.form-control::placeholder,
+        .game-info-section textarea.form-control::placeholder {
+            color: #999;
+        }
+
+        .game-info-section input.form-control:focus,
+        .game-info-section textarea.form-control:focus {
+            color: #333;
+            background-color: #fff;
+            border-color: #ff758c;
+            box-shadow: 0 0 0 0.2rem rgba(255, 117, 140, 0.25);
+        }
+
+        .game-info-section input.form-control:-webkit-autofill,
+        .game-info-section textarea.form-control:-webkit-autofill {
+            -webkit-text-fill-color: #333 !important;
+            -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+        }
+</style>
+
+<div class="game-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4">@Model.Title</h1>
+                <p class="lead">@Model.Developer</p>
+                <div class="mt-3">
+                    <span class="badge bg-secondary me-2">@await Html.PartialAsync("_PlatformDisplay", Model)</span>
+                    <span class="badge bg-secondary me-2">@Model.Genre</span>
+                    <span class="badge bg-secondary">@Model.Rating</span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="d-flex justify-content-md-end">
+                    <div class="score-display">
+                        <div class="metascore @(Model.MetaScore >= 90 ? "excellent" : (Model.MetaScore >= 75 ? "good" : "mixed"))" style="top:10%">
+                            @Model.MetaScore
+                        </div>
+                    </div>
+                    @if (Model.UserScore > 0)
+                    {
+                        <div class="score-display ms-3">
+                            <div class="userscore @(Model.UserScore >= 8 ? "excellent" : (Model.UserScore >= 6 ? "good" : "mixed"))">
+                                @Model.UserScore
+                            </div>
+                            <div class="score-label">User Score</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Video Section -->
+            @functions {
+                public string ConvertToEmbedUrl(string url)
+                {
+                    if (string.IsNullOrEmpty(url)) return "";
+
+                    try
+                    {
+                        // Nếu đã là embed URL thì giữ nguyên
+                        if (url.Contains("embed")) return url;
+
+                        // Xử lý link dạng https://www.youtube.com/watch?v=...
+                        if (url.Contains("youtube.com/watch?v="))
+                        {
+                            var uri = new Uri(url);
+                            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                            var videoId = query["v"];
+                            if (!string.IsNullOrEmpty(videoId))
+                            {
+                                return $"https://www.youtube.com/embed/{videoId}";
+                            }
+                        }
+                        // Xử lý link rút gọn dạng https://youtu.be/...
+                        else if (url.Contains("youtu.be/"))
+                        {
+                            var videoId = url.Split('/').Last().Split('?').First();
+                            if (!string.IsNullOrEmpty(videoId))
+                            {
+                                return $"https://www.youtube.com/embed/{videoId}";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error converting URL: {url}, Exception: {ex.Message}");
+                    }
+
+                    return url; // Return original URL if conversion fails
+                }
+            }
+
+                <div class="game-info-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-play-circle me-2"></i>GAME TRAILER
+                    </h2>
+                @{
+                    var videoUrl = !string.IsNullOrEmpty(Model.TrailerUrl) ? Model.TrailerUrl : Model.VideoUrl;
+                    var embedUrl = !string.IsNullOrEmpty(videoUrl) ? ConvertToEmbedUrl(videoUrl) : "";
+                    
+                    if (!string.IsNullOrEmpty(embedUrl))
+                    {
+                        <div class="video-container">
+                            <iframe src="@embedUrl"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <p>No trailer available for this game yet.</p>
+                        </div>
+                    }
+                    }
+                </div>
+
+            <!-- Screenshot Gallery -->
+            @if (!string.IsNullOrEmpty(Model.Screenshot))
+            {
+                var screenshots = Model.Screenshot.Split(';', StringSplitOptions.RemoveEmptyEntries).Take(4).ToList();
+
+                if (screenshots.Any())
+                {
+                    <div class="game-info-section mt-4">
+                        <h2 class="section-title">
+                            <i class="fas fa-images me-2"></i>SCREENSHOTS
+                        </h2>
+                        <div class="row g-3">
+                            @foreach (var img in screenshots)
+                            {
+                                <div class="col-md-3 col-sm-6">
+                                    <img src="@img" alt="Game Screenshot" class="img-fluid rounded shadow-sm" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+
+
+
+           
+
+
+           <!-- Summary Section -->
+            <div class="game-info-section">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle me-2"></i>SUMMARY
+                </h2>
+                <p>@Model.Description</p>
+            </div>
+
+            <!-- Details Section -->
+            <div class="game-info-section">
+                <h2 class="section-title">
+                    <i class="fas fa-list me-2"></i>DETAILS
+                </h2>
+                <div class="game-details">
+                    <div class="detail-label">Developer</div>
+                    <div>@Model.Developer</div>
+
+                    <div class="detail-label">Publisher</div>
+                    <div>@Model.Publisher</div>
+
+                    <div class="detail-label">Release Date</div>
+                    <div>@(Model.ReleaseDate.HasValue ? Model.ReleaseDate.Value.ToString("MMMM d, yyyy") : "TBA")</div>
+
+                    <div class="detail-label">Platforms</div>
+                    <div>
+                        @await Html.PartialAsync("_PlatformDisplay", Model)
+                    </div>
+
+                    <div class="detail-label">Genre</div>
+                    <div>@Model.Genre</div>
+
+                    <div class="detail-label">Rating</div>
+                    <div>@Model.Rating</div>
+                </div>
+            </div>
+
+            <!-- Reviews & Ratings Section -->
+            <div class="game-info-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star me-2"></i>REVIEWS & RATINGS
+                </h2>
+                <div class="row g-4">
+                    <!-- Metascore -->
+                    <div class="col-md-4">
+                        <div class="comparison-item">
+                            <div class="comparison-title mb-2 small text-uppercase text-muted">Metascore</div>
+                            <div class="comparison-score @(Model.MetaScore >= 90 ? "text-success" : (Model.MetaScore >= 75 ? "text-warning" : "text-danger"))">
+                                @Model.MetaScore
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Score -->
+                    <div class="col-md-4">
+                        <div class="comparison-item">
+                            <div class="comparison-title mb-2 small text-uppercase text-muted">User Score</div>
+                            @{
+                                var reviewCount = Model.Reviews?.Count ?? 0;
+                                var avgUserScore = reviewCount > 0
+                                ? Math.Round(Model.Reviews.Average(r => r.Score), 1)
+                                : (double?)null;
+                            }
+
+                            <div class="comparison-score text-warning">
+                                @(avgUserScore.HasValue ? avgUserScore.Value.ToString("0.0") : "TBD")
+                            </div>
+                            <div class="comparison-count">
+                                Based on @(reviewCount > 0 ? reviewCount : "no") ratings
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trending Score -->
+                    <div class="col-md-4">
+                        <div class="comparison-item">
+                            <div class="comparison-title mb-2 small text-uppercase text-muted">Trending Score</div>
+                            <div class="comparison-score text-primary">
+                                @(Model.TrendingScore > 0 ? Model.TrendingScore.ToString("0.0") : "TBD")
+                               
+                            </div>
+                            <div class="comparison-count">
+                                Past 7 days
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- User Reviews Section -->
+            @if (Model.Reviews != null && Model.Reviews.Any())
+            {
+                <div class="game-info-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-comments me-2"></i>USER REVIEWS
+                    </h2>
+                    @foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
+                    {
+                        <div class="review-card" data-review-id="@review.Id">
+                            <div class="review-header">
+                                <div>
+                                    <small class="text-muted">By @review.UserId on @review.ReviewDate.ToString("MMM d, yyyy")</small>
+                                </div>
+                                <div class="review-score @(review.Score >= 8 ? "bg-success" : (review.Score >= 6 ? "bg-warning" : "bg-danger"))">
+                                    @review.Score
+                                </div>
+                            </div>
+                            <p>@review.Content</p>
+                            <div class="review-footer">
+                                <small class="text-muted helpful-count">@review.HelpfulCount people found this helpful</small>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <button class="btn btn-sm btn-outline-secondary ms-2 helpful-button" onclick="markHelpful(@review.Id)">
+                                        <i class="fas fa-thumbs-up"></i> Helpful
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Add Review Section -->
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="game-info-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-pen me-2"></i>WRITE A REVIEW
+                    </h2>
+                    <form asp-action="Review" asp-controller="Game" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="gameId" value="@Model.Id" />
+                       
+                        <div class="mb-3">
+                            <label class="form-label">Review</label>
+                            <textarea name="content" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Score (0-100)</label>
+                            <input type="number" name="score" class="form-control" min="0" max="100" required />
+                            <small class="text-muted">Rate the game from 0 (worst) to 100 (best)</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                </div>
+            }
+        </div>
+
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Game Image -->
+            <div class="game-info-section">
+                <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Title">
+            </div>
+            <!-- Where to Buy -->
+            <div class="game-info-section where-to-buy">
+                <h2 class="section-title">
+                    <i class="fas fa-shopping-cart"></i>WHERE TO BUY
+                </h2>
+                <div class="store-cards-container">
+                    @{
+                        bool hasPlatforms = false;
+                        var encodedTitle = Uri.EscapeDataString(Model.Title); // encode tiêu đề game để đưa vào URL
+
+                        // GOG
+                        <div class="store-card">
+                            <a href="https://www.gog.com/en/games?search=@encodedTitle" target="_blank">
+                                <div class="card">
+                                    <div class="card-body d-flex align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><i class="fas fa-globe me-2"></i>GOG</h6>
+                                            <p class="mb-0 text-muted small">Platform: PC</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        // Steam
+                        <div class="store-card">
+                            <a href="https://store.steampowered.com/search/?term=@encodedTitle" target="_blank">
+                                <div class="card">
+                                    <div class="card-body d-flex align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><i class="fab fa-steam me-2"></i>Steam</h6>
+                                            <p class="mb-0 text-muted small">Platform: PC</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        // Epic Games
+                        <div class="store-card">
+                            <a href="https://store.epicgames.com/en-US/browse?q=@encodedTitle" target="_blank">
+                                <div class="card">
+                                    <div class="card-body d-flex align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><i class="fas fa-gamepad me-2"></i>Epic Games Store</h6>
+                                            <p class="mb-0 text-muted small">Platform: PC</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        // PlayStation Store
+                        if (Model.GamePlatforms?.Any(p => p.Platform?.Name.Contains("PlayStation") ?? false) == true)
+                        {
+                            hasPlatforms = true;
+                            <div class="store-card">
+                                <a href="https://store.playstation.com/en-us/search/@encodedTitle" target="_blank">
+                                    <div class="card">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-1"><i class="fab fa-playstation me-2"></i>PlayStation Store</h6>
+                                                <p class="mb-0 text-muted small">Platform: PlayStation</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+
+                        // Xbox Store
+                        if (Model.GamePlatforms?.Any(p => p.Platform?.Name.Contains("Xbox") ?? false) == true)
+                        {
+                            hasPlatforms = true;
+                            <div class="store-card">
+                                <a href="https://www.xbox.com/en-US/search?q=@encodedTitle" target="_blank">
+                                    <div class="card">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-1"><i class="fab fa-xbox me-2"></i>Xbox Store</h6>
+                                                <p class="mb-0 text-muted small">Platform: Xbox</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+
+                        // Nintendo eShop
+                        if (Model.GamePlatforms?.Any(p => p.Platform?.Name.Contains("Nintendo") ?? false) == true)
+                        {
+                            hasPlatforms = true;
+                            <div class="store-card">
+                                <a href="https://www.nintendo.com/search/?q=@encodedTitle" target="_blank">
+                                    <div class="card">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-1"><i class="fas fa-gamepad me-2"></i>Nintendo eShop</h6>
+                                                <p class="mb-0 text-muted small">Platform: Nintendo Switch</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+
+                        // Nếu không có nền tảng nào được gắn
+                        if (Model.GamePlatforms == null || !Model.GamePlatforms.Any())
+                        {
+                            <div class="px-3 py-3">
+                                <p class="mb-2">No specific store information available for this game.</p>
+                                <a href="https://www.google.com/search?q=buy+@encodedTitle+game" target="_blank" class="btn btn-sm btn-primary">Find Stores Online</a>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+
+
+            <!-- Related Games -->
+            <div class="game-info-section">
+                <h2 class="section-title">
+                    <i class="fas fa-gamepad me-2"></i>RELATED GAMES
+                </h2>
+                <div class="list-group">
+                    @{
+                        var relatedGames = ViewBag.RelatedGames as List<Game> ?? new List<Game>();
+                        foreach (var game in relatedGames.Take(5))
+                        {
+                            <a href="@Url.Action("Details", new { id = game.Id })"
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                @game.Title
+                                <span class="badge @(game.MetaScore >= 90 ? "bg-success" : (game.MetaScore >= 75 ? "bg-warning" : "bg-danger"))">
+                                    @game.MetaScore
+                                </span>
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function markHelpful(reviewId) {
+            fetch(`/Game/MarkHelpful/${reviewId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the helpful count display
+                    const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`);
+                    const helpfulCountElement = reviewCard.querySelector('.helpful-count');
+                    helpfulCountElement.textContent = `${data.helpfulCount} people found this helpful`;
+
+                    // Disable the button
+                    const helpfulButton = reviewCard.querySelector('.helpful-button');
+                    helpfulButton.disabled = true;
+                    helpfulButton.classList.add('btn-success');
+                    helpfulButton.classList.remove('btn-outline-secondary');
+                } else {
+                    alert(data.message || 'Error updating review');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating review');
+            });
+        }
+    </script>
+}

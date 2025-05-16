@@ -1,0 +1,355 @@
+@model IEnumerable<WebGame.Models.Game>
+@{
+    ViewData["Title"] = ViewBag.Title ?? "Games";
+    bool isUpcoming = ViewContext.RouteData.Values["action"].ToString() == "Upcoming";
+}
+
+<style>
+    /* MetaCritic Style */
+    .metacritic-games {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .metacritic-header {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 10px;
+    }
+    
+    .game-list-item {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 15px;
+        background-color: #fff;
+        transition: all 0.2s ease;
+        display: flex;
+        height: 120px;
+    }
+    
+    .game-list-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-color: #ccc;
+    }
+    
+    .game-index {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        font-weight: bold;
+        color: #666;
+        padding: 0 5px;
+        font-size: 14px;
+    }
+    
+    .game-image-container {
+        width: 80px;
+        height: 120px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    
+    .game-thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .game-info {
+        flex-grow: 1;
+        padding: 12px 15px;
+        position: relative;
+    }
+    
+    .game-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        line-height: 1.3;
+    }
+    
+    .game-title a {
+        color: #333;
+        text-decoration: none;
+    }
+    
+    .game-title a:hover {
+        color: #0056b3;
+    }
+    
+    .game-details {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 2px;
+    }
+    
+    .game-date {
+        font-size: 13px;
+        color: #333;
+    }
+    
+    .game-date strong {
+        color: #0e76a8;
+    }
+    
+    .metascore-container {
+        flex-shrink: 0;
+        width: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+    }
+    
+    .metascore-badge {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        border-radius: 4px;
+        font-size: 18px;
+    }
+    
+    .bg-success {
+        background-color: #6c3;
+        border: 1px solid #4b1;
+    }
+    
+    .bg-warning {
+        background-color: #fc3;
+        border: 1px solid #eb1;
+    }
+    
+    .bg-danger {
+        background-color: #f00;
+        border: 1px solid #d00;
+    }
+    
+    .filters-panel {
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .filter-group {
+        margin-bottom: 15px;
+    }
+    
+    .filter-label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+    
+    .filter-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .filter-link {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 15px;
+        background-color: #e0e0e0;
+        color: #333;
+        text-decoration: none;
+        font-size: 13px;
+    }
+    
+    .filter-link:hover, .filter-link.active {
+        background-color: #0056b3;
+        color: white;
+    }
+    
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .results-count {
+        font-size: 15px;
+        color: #666;
+    }
+    
+    .results-sort {
+        display: flex;
+        align-items: center;
+    }
+    
+    .sort-label {
+        margin-right: 8px;
+        font-size: 14px;
+    }
+    
+    .sort-select {
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+    
+    .no-results {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        text-align: center;
+        color: #666;
+    }
+    
+    .no-results p {
+        margin-bottom: 0;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="metacritic-games">
+        <div class="metacritic-header">
+            <h1 class="h3 fw-bold">@ViewBag.Title</h1>
+            @if (!string.IsNullOrEmpty(ViewBag.Description))
+            {
+                <p class="text-muted">@ViewBag.Description</p>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="results-header">
+                    <div class="results-count">
+                        <strong>@Model.Count()</strong> results
+                    </div>
+                    <div class="results-sort">
+                        <span class="sort-label">Sort by:</span>
+                        <select class="sort-select" onchange="location = this.value;">
+                            <option value="@Url.Action("TopRated", "Game", new { sortBy = "score" })">Metascore</option>
+                            <option value="@Url.Action("TopRated", "Game", new { sortBy = "name" })">Name</option>
+                            <option value="@Url.Action("TopRated", "Game", new { sortBy = "date" })">Release Date</option>
+                            <option value="@Url.Action("TopRated", "Game", new { sortBy = "userscore" })">User Score</option>
+                        </select>
+                    </div>
+                </div>
+
+                @if (Model.Any())
+                {
+                    <div class="metacritic-game-list">
+                        @{
+                            int index = 1;
+                        }
+                        @foreach (var game in Model)
+                        {
+                            <div class="game-list-item">
+                                <div class="game-index">@(index++). </div>
+                                <div class="game-image-container">
+                                    <a href="@Url.Action("Details", "Game", new { id = game.Id })">
+                                        <img src="@(string.IsNullOrEmpty(game.ImageUrl) ? "/images/games/placeholder.jpg" : game.ImageUrl)" 
+                                             alt="@game.Title" class="game-thumbnail">
+                                    </a>
+                                </div>
+                                <div class="game-info">
+                                    <h4 class="game-title">
+                                        <a href="@Url.Action("Details", "Game", new { id = game.Id })">@game.Title</a>
+                                    </h4>
+                                    <div class="game-details">
+                                        @if (!string.IsNullOrEmpty(game.Platform))
+                                        {
+                                            <span>@game.Platform</span>
+                                        }
+                                        
+                                        @if (!string.IsNullOrEmpty(game.Rating))
+                                        {
+                                            <span>&bull; Rated @game.Rating</span>
+                                        }
+                                    </div>
+                                    <div class="game-date">
+                                        @if (isUpcoming)
+                                        {
+                                            <strong>@(game.ReleaseDate.HasValue ? game.ReleaseDate.Value.ToString("MMM d, yyyy") : "TBA")</strong>
+                                        }
+                                        else
+                                        {
+                                            @(game.ReleaseDate.HasValue ? game.ReleaseDate.Value.ToString("MMM d, yyyy") : "TBA")
+                                        }
+                                    </div>
+                                </div>
+                                <div class="metascore-container">
+                                    <div class="metascore-badge @(game.MetaScore >= 90 ? "bg-success" : (game.MetaScore >= 75 ? "bg-warning" : "bg-danger"))">
+                                        @game.MetaScore
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="no-results">
+                        <p>No games found matching your criteria.</p>
+                    </div>
+                }
+            </div>
+            
+            <div class="col-md-4">
+                <div class="filters-panel">
+                    <h3 class="filter-title">Filters</h3>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Platforms</label>
+                        <div class="filter-links">
+                            <a href="@Url.Action("TopRated", "Game")" class="filter-link active">All</a>
+                            <a href="@Url.Action("TopRated", "Game", new { platform = "PlayStation" })" class="filter-link">PlayStation</a>
+                            <a href="@Url.Action("TopRated", "Game", new { platform = "Xbox" })" class="filter-link">Xbox</a>
+                            <a href="@Url.Action("TopRated", "Game", new { platform = "Nintendo" })" class="filter-link">Nintendo</a>
+                            <a href="@Url.Action("TopRated", "Game", new { platform = "PC" })" class="filter-link">PC</a>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Genres</label>
+                        <div class="filter-links">
+                            <a href="@Url.Action("TopRated", "Game")" class="filter-link active">All</a>
+                            <a href="@Url.Action("TopRated", "Game", new { genre = "Action" })" class="filter-link">Action</a>
+                            <a href="@Url.Action("TopRated", "Game", new { genre = "RPG" })" class="filter-link">RPG</a>
+                            <a href="@Url.Action("TopRated", "Game", new { genre = "Adventure" })" class="filter-link">Adventure</a>
+                            <a href="@Url.Action("TopRated", "Game", new { genre = "FPS" })" class="filter-link">FPS</a>
+                            <a href="@Url.Action("TopRated", "Game", new { genre = "Platformer" })" class="filter-link">Platformer</a>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Years</label>
+                        <div class="filter-links">
+                            <a href="@Url.Action("TopRated", "Game")" class="filter-link active">All</a>
+                            <a href="@Url.Action("TopRated", "Game", new { year = DateTime.Now.Year })" class="filter-link">@DateTime.Now.Year</a>
+                            <a href="@Url.Action("TopRated", "Game", new { year = DateTime.Now.Year - 1 })" class="filter-link">@(DateTime.Now.Year - 1)</a>
+                            <a href="@Url.Action("TopRated", "Game", new { year = DateTime.Now.Year - 2 })" class="filter-link">@(DateTime.Now.Year - 2)</a>
+                            <a href="@Url.Action("TopRated", "Game", new { year = DateTime.Now.Year - 3 })" class="filter-link">@(DateTime.Now.Year - 3)</a>
+                            <a href="@Url.Action("TopRated", "Game", new { year = DateTime.Now.Year - 4 })" class="filter-link">@(DateTime.Now.Year - 4)</a>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="@Url.Action("ReseedGames", "Game")" class="btn btn-sm btn-primary">Refresh Game Data</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

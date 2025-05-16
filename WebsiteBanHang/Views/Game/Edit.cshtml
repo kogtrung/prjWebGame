@@ -1,0 +1,177 @@
+@model WebGame.Models.Game
+
+@{
+    ViewData["Title"] = "Edit Game";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0">Edit Game: @Model.Title</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Title" class="form-label">Title</label>
+                                <input asp-for="Title" class="form-control" required />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ReleaseDate" class="form-label">Release Date</label>
+                                <input asp-for="ReleaseDate" class="form-control" type="date" required />
+                                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ImageUrl" class="form-label">Image URL</label>
+                                <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" required />
+                                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                <img src="@Model.ImageUrl" class="img-thumbnail mt-2" style="max-height: 100px;" alt="Game Image" />
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="VideoUrl" class="form-label">Video URL (YouTube)</label>
+                                <input asp-for="VideoUrl" class="form-control" placeholder="https://www.youtube-nocookie.com/embed/VideoID" />
+                                <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                                <small class="form-text text-muted">Nhập URL embed YouTube (https://www.youtube-nocookie.com/embed/VideoID) thay vì link thông thường</small>
+                                <div class="mt-1 text-info small">
+                                    <i class="fas fa-info-circle"></i> Để chuyển đổi link YouTube thông thường, hãy thay thế:
+                                    <div>watch?v=<strong>VideoID</strong> thành embed/<strong>VideoID</strong></div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                                {
+                                    <a href="@Model.VideoUrl" target="_blank" class="ms-2 text-primary">Xem thử video</a>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Platform" class="form-label">Platforms</label>
+                                <input asp-for="Platform" class="form-control" placeholder="PC, PlayStation, Xbox, Nintendo" required />
+                                <span asp-validation-for="Platform" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Genre" class="form-label">Genre</label>
+                                <input asp-for="Genre" class="form-control" placeholder="Action, RPG, Strategy, etc." required />
+                                <span asp-validation-for="Genre" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="MetaScore" class="form-label">Metascore (0-100)</label>
+                                <input asp-for="MetaScore" class="form-control" type="number" min="0" max="100" required />
+                                <span asp-validation-for="MetaScore" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Developer" class="form-label">Developer</label>
+                                <input asp-for="Developer" class="form-control" />
+                                <span asp-validation-for="Developer" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Publisher" class="form-label">Publisher</label>
+                                <input asp-for="Publisher" class="form-control" />
+                                <span asp-validation-for="Publisher" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Rating" class="form-label">Rating</label>
+                            <select asp-for="Rating" class="form-select">
+                                <option value="">Select Rating</option>
+                                <option value="E">E (Everyone)</option>
+                                <option value="E10+">E10+ (Everyone 10+)</option>
+                                <option value="T">T (Teen)</option>
+                                <option value="M">M (Mature)</option>
+                                <option value="AO">AO (Adults Only)</option>
+                                <option value="RP">RP (Rating Pending)</option>
+                            </select>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mt-4 d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <div>
+                                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger me-2" onclick="return confirm('Are you sure you want to delete this game?')">Delete</a>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-secondary text-white">
+                    <h3 class="h5 mb-0">Reviews (@Model.ReviewCount critic, @Model.UserReviewCount user)</h3>
+                </div>
+                <div class="card-body">
+                    <p>User Score: @Model.UserScore</p>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary">View Reviews</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Giới hạn khoảng điểm MetaScore
+            const metascoreInput = document.getElementById('MetaScore');
+            metascoreInput.addEventListener('input', function() {
+                if (this.value > 100) this.value = 100;
+                if (this.value < 0) this.value = 0;
+            });
+            
+            // Preview video URL
+            const videoUrlInput = document.getElementById('VideoUrl');
+            videoUrlInput.addEventListener('blur', function() {
+                const url = this.value.trim();
+                if (!url) {
+                    const existingLink = this.parentNode.querySelector('a');
+                    if (existingLink) {
+                        existingLink.remove();
+                    }
+                    return;
+                }
+                
+                // Check if it's a YouTube URL
+                if (url.includes('youtube.com/watch?v=') || url.includes('youtu.be/')) {
+                    // Add a small preview link
+                    const previewLink = document.createElement('a');
+                    previewLink.href = url;
+                    previewLink.target = '_blank';
+                    previewLink.textContent = 'Preview Video';
+                    previewLink.className = 'ms-2 text-primary';
+                    
+                    const existingLink = this.parentNode.querySelector('a');
+                    if (existingLink) {
+                        existingLink.remove();
+                    }
+                    
+                    // Add after the small text
+                    this.parentNode.querySelector('small').after(previewLink);
+                }
+            });
+        });
+    </script>
+} 

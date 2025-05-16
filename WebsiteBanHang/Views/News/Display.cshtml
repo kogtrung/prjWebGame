@@ -1,0 +1,8 @@
+﻿@model WebGame.Models.NewsPost
+
+<div class="container my-5 text-light">
+    <h2 class="text-success">@Model.Title</h2>
+    <p class="text-muted">@Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+    <img src="@Model.ImageUrl" class="img-fluid rounded mb-4" style="max-height: 400px; object-fit: cover;" />
+    <div>@Html.Raw(Model.Content)</div>
+</div>

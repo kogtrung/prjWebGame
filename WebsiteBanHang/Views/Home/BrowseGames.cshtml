@@ -1,0 +1,105 @@
+@model List<Game>
+
+@{
+    ViewData["Title"] = "Browse Games";
+}
+
+<div class="container">
+    <div class="row">
+        <!-- Filter Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Filters</h3>
+                </div>
+                <div class="card-body">
+                    <form method="get" asp-action="BrowseGames">
+                        <div class="mb-3">
+                            <label class="form-label">RELEASE YEAR</label>
+                            <select name="year" class="form-select">
+                                <option value="">All Years</option>
+                                @for (int year = DateTime.Now.Year; year >= 1990; year--)
+                                {
+                                    <option value="@year" selected="@(Context.Request.Query["year"] == year.ToString())">@year</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">PLATFORMS</label>
+                            <select name="platform" class="form-select">
+                                <option value="">All Platforms</option>
+                                <option value="PC" selected="@(Context.Request.Query["platform"] == "PC")">PC</option>
+                                <option value="PlayStation" selected="@(Context.Request.Query["platform"] == "PlayStation")">PlayStation</option>
+                                <option value="Xbox" selected="@(Context.Request.Query["platform"] == "Xbox")">Xbox</option>
+                                <option value="Nintendo" selected="@(Context.Request.Query["platform"] == "Nintendo")">Nintendo</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">GENRE</label>
+                            <select name="genre" class="form-select">
+                                <option value="">All Genres</option>
+                                <option value="Action" selected="@(Context.Request.Query["genre"] == "Action")">Action</option>
+                                <option value="Adventure" selected="@(Context.Request.Query["genre"] == "Adventure")">Adventure</option>
+                                <option value="RPG" selected="@(Context.Request.Query["genre"] == "RPG")">RPG</option>
+                                <option value="Strategy" selected="@(Context.Request.Query["genre"] == "Strategy")">Strategy</option>
+                                <option value="Sports" selected="@(Context.Request.Query["genre"] == "Sports")">Sports</option>
+                                <option value="Racing" selected="@(Context.Request.Query["genre"] == "Racing")">Racing</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Grid -->
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var game in Model)
+                {
+                    <div class="col">
+                        <div class="card h-100">
+                            <img src="@game.ImageUrl" class="card-img-top" alt="@game.Title">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">@game.Title</h5>
+                                    <span class="badge bg-success">@game.MetaScore</span>
+                                </div>
+                                <p class="card-text text-muted small">
+                                    Released: @(game.ReleaseDate.HasValue ? game.ReleaseDate.Value.ToString("MMM dd, yyyy") : "TBA")<br>
+                                    Platform: @game.Platform<br>
+                                    Genre: @game.Genre
+                                </p>
+                                <p class="card-text">@game.Description</p>
+                                <div class="text-muted small">
+                                    Developer: @game.Developer<br>
+                                    Publisher: @game.Publisher
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="btn btn-outline-primary btn-sm">View Details</a>
+                                <a href="#" class="btn btn-outline-success btn-sm">Write Review</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Highlight active filters
+            $('select').each(function() {
+                if ($(this).val()) {
+                    $(this).addClass('border-primary');
+                }
+            });
+        });
+    </script>
+} 

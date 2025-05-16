@@ -1,0 +1,145 @@
+﻿@model IEnumerable<WebGame.Models.NewsPost>
+@{
+    ViewData["Title"] = "News";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Featured News</h1>
+
+    <div class="row mb-5">
+        @foreach (var featuredNews in Model.Take(3))
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="@featuredNews.ImageUrl" class="card-img-top" alt="@featuredNews.Title">
+                    <div class="card-body">
+                        <h5 class="card-title">@featuredNews.Title</h5>
+                        <p class="card-text">@featuredNews.Summary</p>
+                        <p class="text-muted small">@featuredNews.CreatedAt.ToString("dd MMM, yyyy")</p>
+                        <a href="@Url.Action("Details", "News", new { id = featuredNews.Id })" class="btn btn-custom">Read More</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <h2 class="mb-4">Latest News</h2>
+
+    <div class="list-group">
+        @foreach (var news in Model.Skip(3))
+        {
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src="@news.ImageUrl" class="img-fluid rounded" alt="@news.Title">
+                    </div>
+                    <div class="col-md-9">
+                        <h5 class="mb-2">@news.Title</h5>
+                        <p class="mb-2">@news.Summary</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">@news.CreatedAt.ToString("dd MMM, yyyy")</small>
+                            <a href="@Url.Action("Details", "News", new { id = news.Id })" class="btn btn-sm btn-outline-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Đảm bảo card có chiều cao đồng đều */
+    .card {
+        transition: transform 0.2s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+
+    .text-muted.small {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Nút Read More tùy chỉnh cho Featured News */
+    .btn-custom {
+        background-color: #ff6b6b; /* Màu hồng giống trong hình */
+        border: none;
+        color: #fff;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+
+        .btn-custom:hover {
+            background-color: #ff5252;
+            color: #fff;
+        }
+
+    /* Latest News */
+    .list-group-item {
+        transition: background-color 0.2s;
+    }
+
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .list-group-item img {
+            height: 150px;
+            object-fit: cover;
+        }
+
+    /* Nút Read More trong Latest News */
+    .btn-outline-primary {
+        color: #ff6b6b;
+        border-color: #ff6b6b;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #ff6b6b;
+            border-color: #ff6b6b;
+            color: #fff;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Fix for card height
+            $('.card').matchHeight();
+        });
+    </script>
+}

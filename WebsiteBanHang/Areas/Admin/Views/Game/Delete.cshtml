@@ -1,0 +1,91 @@
+@model WebGame.Models.Game
+
+@{
+    ViewData["Title"] = "Xóa game";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title text-danger mb-4">
+                <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa game
+            </h3>
+
+            <div class="alert alert-warning">
+                <h5 class="alert-heading">Bạn có chắc chắn muốn xóa game này?</h5>
+                <p class="mb-0">Hành động này không thể hoàn tác và sẽ xóa tất cả dữ liệu liên quan đến game này.</p>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-3">Tên game</dt>
+                        <dd class="col-sm-9">@Model.Title</dd>
+
+                        <dt class="col-sm-3">Ngày phát hành</dt>
+                        <dd class="col-sm-9">@(Model.ReleaseDate.HasValue ? Model.ReleaseDate.Value.ToString("dd/MM/yyyy") : "TBA")</dd>
+
+                        <dt class="col-sm-3">Thể loại</dt>
+                        <dd class="col-sm-9">@Model.Genre</dd>
+
+                        <dt class="col-sm-3">Nhà phát triển</dt>
+                        <dd class="col-sm-9">@Model.Developer</dd>
+
+                        <dt class="col-sm-3">Nhà phát hành</dt>
+                        <dd class="col-sm-9">@Model.Publisher</dd>
+
+                        <dt class="col-sm-3">Điểm đánh giá</dt>
+                        <dd class="col-sm-9">
+                            @if (Model.MetaScore > 0)
+                            {
+                                var scoreClass = Model.MetaScore >= 75 ? "text-success" :
+                                               Model.MetaScore >= 50 ? "text-warning" : "text-danger";
+                                <span class="@scoreClass">@Model.MetaScore</span>
+                            }
+                            else
+                            {
+                                <span>Chưa có đánh giá</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">Nền tảng</dt>
+                        <dd class="col-sm-9">
+                            @if (Model.GamePlatforms != null && Model.GamePlatforms.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach (var platform in Model.GamePlatforms)
+                                    {
+                                        <span class="badge bg-secondary">@platform.Platform?.Name</span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <span>Chưa có thông tin</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="col-md-4">
+                        <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded" />
+                    </div>
+                }
+            </div>
+
+            <form asp-action="DeleteConfirmed" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Xác nhận xóa
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 

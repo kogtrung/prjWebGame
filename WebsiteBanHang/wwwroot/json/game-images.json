@@ -1,0 +1,64 @@
+{
+  "Games": [
+    {
+      "Title": "Helldivers 2",
+      "ImageUrl": "/images/games/helldivers2.jpg"
+    },
+    {
+      "Title": "Stellar Blade",
+      "ImageUrl": "/images/games/stellarblade.jpg"
+    },
+    {
+      "Title": "Final Fantasy VII Rebirth",
+      "ImageUrl": "/images/games/ff7rebirth.jpg"
+    },
+    {
+      "Title": "The Legend of Zelda: Tears of the Kingdom",
+      "ImageUrl": "/images/games/zelda-totk.jpg"
+    },
+    {
+      "Title": "Hogwarts Legacy",
+      "ImageUrl": "/images/games/hogwarts-legacy.jpg"
+    },
+    {
+      "Title": "God of War Ragnarök",
+      "ImageUrl": "/images/games/god-of-war.jpg"
+    },
+    {
+      "Title": "Elden Ring",
+      "ImageUrl": "/images/games/elden-ring.jpg"
+    },
+    {
+      "Title": "Star Wars Jedi: Survivor",
+      "ImageUrl": "/images/games/jedi-survivor.jpg"
+    },
+    {
+      "Title": "Spider-Man 2",
+      "ImageUrl": "/images/games/spiderman2.jpg"
+    },
+    {
+      "Title": "Baldur's Gate 3",
+      "ImageUrl": "/images/games/baldurs-gate3.jpg"
+    },
+    {
+      "Title": "Resident Evil 4 Remake",
+      "ImageUrl": "/images/games/re4-remake.jpg"
+    },
+    {
+      "Title": "Diablo IV",
+      "ImageUrl": "/images/games/diablo4.jpg"
+    },
+    {
+      "Title": "Alan Wake 2",
+      "ImageUrl": "/images/games/alan-wake2.jpg"
+    },
+    {
+      "Title": "Cyberpunk 2077: Phantom Liberty",
+      "ImageUrl": "/images/games/cyberpunk-phantom-liberty.jpg"
+    },
+    {
+      "Title": "Starfield",
+      "ImageUrl": "/images/games/starfield.jpg"
+    }
+  ]
+} 

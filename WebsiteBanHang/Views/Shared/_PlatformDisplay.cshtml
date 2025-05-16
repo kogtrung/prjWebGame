@@ -1,0 +1,97 @@
+@model WebGame.Models.Game
+
+@{
+    string platformText = "";
+    string cssClass = "game-platform";
+    List<string> platformsList = new List<string>();
+    
+    // First check if we have GamePlatforms collection with data
+    if (Model.GamePlatforms != null && Model.GamePlatforms.Any(gp => gp.Platform != null))
+    {
+        platformsList = Model.GamePlatforms
+            .Where(gp => gp.Platform != null)
+            .Select(gp => gp.Platform.Name)
+            .OrderBy(name => name)
+            .ToList();
+    }
+    
+    // If no platforms in collection, try the Platform string property
+    if (!platformsList.Any() && !string.IsNullOrEmpty(Model.Platform) && Model.Platform != "Not specified")
+    {
+        platformsList = Model.Platform.Split(',')
+            .Select(p => p.Trim())
+            .Where(p => !string.IsNullOrEmpty(p))
+            .ToList();
+    }
+    
+    // If still empty, assign platforms based on game genre
+    if (!platformsList.Any())
+    {
+        // Get platforms based on game genre or use default
+        if (!string.IsNullOrEmpty(Model.Genre))
+        {
+            if (Model.Genre.Contains("RPG"))
+            {
+                platformsList = new List<string> { "PC", "PlayStation 5", "Xbox Series X" };
+            }
+            else if (Model.Genre.Contains("Action") || Model.Genre.Contains("Adventure"))
+            {
+                platformsList = new List<string> { "PC", "PlayStation 5", "Xbox Series X", "Nintendo Switch" };
+            }
+            else if (Model.Genre.Contains("Strategy") || Model.Genre.Contains("Simulation"))
+            {
+                platformsList = new List<string> { "PC", "Nintendo Switch" };
+            }
+            else if (Model.Genre.Contains("Sports") || Model.Genre.Contains("Fighting"))
+            {
+                platformsList = new List<string> { "PlayStation 5", "Xbox Series X", "Nintendo Switch" };
+            }
+            else
+            {
+                platformsList = new List<string> { "PC", "PlayStation 5", "Xbox Series X" };
+            }
+        }
+        else
+        {
+            platformsList = new List<string> { "PC", "PlayStation 5", "Xbox Series X" };
+        }
+    }
+    
+    // Add multiple platform class if needed
+    if (platformsList.Count > 1)
+    {
+        cssClass += " platform-multiple";
+    }
+    
+    // Convert list to string for display
+    platformText = string.Join(", ", platformsList);
+}
+
+<span class="@cssClass">
+    @foreach (var platform in platformsList)
+    {
+        <span class="platform-badge @platform.ToLower().Replace(" ", "-")">
+            @if (platform.Contains("PlayStation"))
+            {
+                <i class="fab fa-playstation"></i>
+            }
+            else if (platform.Contains("Xbox"))
+            {
+                <i class="fab fa-xbox"></i>
+            }
+            else if (platform.Contains("Nintendo"))
+            {
+                <i class="fas fa-gamepad"></i>
+            }
+            else if (platform.Contains("PC"))
+            {
+                <i class="fas fa-desktop"></i>
+            }
+            else
+            {
+                <i class="fas fa-gamepad"></i>
+            }
+            @platform
+        </span>
+    }
+</span> 

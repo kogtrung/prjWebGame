@@ -1,0 +1,80 @@
+﻿@model WebGame.Models.NewsPost
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="News" asp-action="Index">Tin tức</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="news-detail">
+                <h1 class="display-5 mb-3">@Model.Title</h1>
+                
+                <div class="mb-4 text-muted">
+                    <span class="me-3"><i class="bi bi-calendar"></i> @Model.CreatedAt.ToString("dd/MM/yyyy")</span>
+                    @if (Model.GameCategory != null)
+                    {
+                        <span class="badge bg-primary">@Model.GameCategory.Name</span>
+                    }
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="featured-image mb-4">
+                        <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Title">
+                    </div>
+                }
+                
+                @if (!string.IsNullOrEmpty(Model.Summary))
+                {
+                    <div class="summary mb-4">
+                        <p class="lead">@Model.Summary</p>
+                        <hr/>
+                    </div>
+                }
+                
+                <div class="content">
+                    @Html.Raw(Model.Content)
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Bài viết cùng chủ đề</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.GameCategory != null && Model.GameCategory.NewsPosts != null && Model.GameCategory.NewsPosts.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var relatedPost in Model.GameCategory.NewsPosts.Where(p => p.Id != Model.Id).Take(5))
+                            {
+                                <li class="list-group-item">
+                                    <a asp-action="Details" asp-route-id="@relatedPost.Id">@relatedPost.Title</a>
+                                    <small class="text-muted d-block">@relatedPost.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="card-text">Không có bài viết liên quan.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    </div>
+</div>

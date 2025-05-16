@@ -1,0 +1,176 @@
+@model WebGame.Models.Game
+
+@{
+    ViewData["Title"] = "Edit Game";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Edit Game: @Model.Title</h6>
+        </div>
+        <div class="card-body">
+            <form asp-area="Admin" asp-controller="Game" asp-action="Edit" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Title" class="form-label">Title</label>
+                        <input asp-for="Title" class="form-control" required />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ReleaseDate" class="form-label">Release Date</label>
+                        <input asp-for="ReleaseDate" class="form-control" type="date" required />
+                        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ImageUrl" class="form-label">Current Image</label>
+                        <input asp-for="ImageUrl" class="form-control" readonly />
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" class="img-thumbnail mt-2" style="max-height: 100px;" alt="Game Image" />
+                        }
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="ImageFile" class="form-label">Upload New Image</label>
+                        <input type="file" id="ImageFile" name="ImageFile" class="form-control" accept="image/*" />
+                        <small class="form-text text-muted">Leave empty to keep the current image</small>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="VideoUrl" class="form-label">Video URL (YouTube)</label>
+                        <input asp-for="VideoUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=VideoID" />
+                        <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                        <small class="form-text text-muted">Enter YouTube URL - it will be automatically converted to embed format</small>
+                        @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                        {
+                            <a href="@(Model.VideoUrl.Contains("embed/") ? Model.VideoUrl.Replace("embed/", "watch?v=") : Model.VideoUrl)" target="_blank" class="ms-2 text-primary">Preview video</a>
+                        }
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="TrailerUrl" class="form-label">Trailer URL (YouTube)</label>
+                        <input asp-for="TrailerUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=VideoID" />
+                        <span asp-validation-for="TrailerUrl" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Platform" class="form-label">Platform (Text)</label>
+                        <input asp-for="Platform" class="form-control" placeholder="PC, PlayStation 5, Xbox Series X/S, Nintendo Switch" required />
+                        <span asp-validation-for="Platform" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="SelectedPlatforms" class="form-label">Select Platforms</label>
+                        <select id="SelectedPlatforms" name="SelectedPlatforms" class="form-select" multiple asp-items="@ViewData["Platforms"] as MultiSelectList">
+                        </select>
+                        <small class="form-text text-muted">Hold Ctrl to select multiple platforms</small>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Genre" class="form-label">Genre</label>
+                        <select asp-for="Genre" class="form-select" asp-items="@ViewData["Genres"] as SelectList"></select>
+                        <span asp-validation-for="Genre" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Rating" class="form-label">Rating</label>
+                        <select asp-for="Rating" class="form-select">
+                            <option value="">Select Rating</option>
+                            <option value="E">E (Everyone)</option>
+                            <option value="E10+">E10+ (Everyone 10+)</option>
+                            <option value="T">T (Teen)</option>
+                            <option value="M">M (Mature)</option>
+                            <option value="AO">AO (Adults Only)</option>
+                            <option value="RP">RP (Rating Pending)</option>
+                        </select>
+                        <span asp-validation-for="Rating" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="MetaScore" class="form-label">Metascore (0-100)</label>
+                        <input asp-for="MetaScore" class="form-control" type="number" min="0" max="100" required />
+                        <span asp-validation-for="MetaScore" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Developer" class="form-label">Developer</label>
+                        <input asp-for="Developer" class="form-control" />
+                        <span asp-validation-for="Developer" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Publisher" class="form-label">Publisher</label>
+                        <input asp-for="Publisher" class="form-control" />
+                        <span asp-validation-for="Publisher" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input asp-for="MustPlay" class="form-check-input" type="checkbox" />
+                            <label asp-for="MustPlay" class="form-check-label">Must Play</label>
+                            <span asp-validation-for="MustPlay" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 d-flex justify-content-between">
+                    <a asp-area="Admin" asp-controller="Game" asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    <div>
+                        <a asp-area="Admin" asp-controller="Game" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger me-2">Delete</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Limit Metascore range
+            const metascoreInput = document.getElementById('MetaScore');
+            metascoreInput.addEventListener('input', function() {
+                if (this.value > 100) this.value = 100;
+                if (this.value < 0) this.value = 0;
+            });
+            
+            // Fix select multiple platforms
+            $(document).ready(function() {
+                // Use Select2 for better UX if available
+                if ($.fn.select2) {
+                    $('#SelectedPlatforms').select2({
+                        placeholder: "Select platforms",
+                        allowClear: true
+                    });
+                }
+            });
+        });
+    </script>
+} 

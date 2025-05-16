@@ -1,0 +1,312 @@
+@model dynamic
+
+@{
+    // Get current filter parameters from the URL
+    var currentYear = Context.Request.Query["year"].ToString();
+    var currentPlatforms = Context.Request.Query["platforms"].ToString().Split(",", StringSplitOptions.RemoveEmptyEntries);
+    var currentGenres = Context.Request.Query["genres"].ToString().Split(",", StringSplitOptions.RemoveEmptyEntries);
+    
+    // Default year slider value
+    int yearValue = string.IsNullOrEmpty(currentYear) ? 1958 : int.Parse(currentYear);
+}
+
+<div class="filter-container">
+    <!-- Release Year Section with Range Slider -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">RELEASE YEAR</h5>
+            <a href="@Url.Action("Index", "Game", new { platforms = Context.Request.Query["platforms"], genres = Context.Request.Query["genres"] })" class="text-reset text-decoration-none reset-link">RESET</a>
+        </div>
+        <div class="card-body pt-3 pb-4">
+            <div class="d-flex justify-content-between mb-2">
+                <span>1958</span>
+                <span>2025</span>
+            </div>
+            <input type="range" class="form-range" min="1958" max="2025" value="@yearValue" id="yearRangeSlider">
+            <div class="text-center mt-2">
+                <span id="selectedYear">@yearValue</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Platforms Section with Checkboxes -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">PLATFORMS</h5>
+            <button class="btn btn-link p-0 border-0 filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#platformsCollapse">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        <div class="collapse show" id="platformsCollapse">
+            <div class="card-body py-3">
+                <div class="form-check mb-2">
+                    <input class="form-check-input platform-checkbox" type="checkbox" id="platform-ps5" value="PlayStation 5" @(currentPlatforms.Contains("PlayStation 5") ? "checked" : "")>
+                    <label class="form-check-label" for="platform-ps5">PlayStation 5</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input platform-checkbox" type="checkbox" id="platform-xbox" value="Xbox Series X|S" @(currentPlatforms.Contains("Xbox Series X|S") ? "checked" : "")>
+                    <label class="form-check-label" for="platform-xbox">Xbox Series X|S</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input platform-checkbox" type="checkbox" id="platform-switch" value="Nintendo Switch" @(currentPlatforms.Contains("Nintendo Switch") ? "checked" : "")>
+                    <label class="form-check-label" for="platform-switch">Nintendo Switch</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input platform-checkbox" type="checkbox" id="platform-pc" value="PC" @(currentPlatforms.Contains("PC") ? "checked" : "")>
+                    <label class="form-check-label" for="platform-pc">PC</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input platform-checkbox" type="checkbox" id="platform-mobile" value="Mobile" @(currentPlatforms.Contains("Mobile") ? "checked" : "")>
+                    <label class="form-check-label" for="platform-mobile">Mobile</label>
+                </div>
+                
+                <button id="showMorePlatforms" class="btn btn-link p-0 text-decoration-none show-more-btn">
+                    <i class="fas fa-plus me-1"></i> Show More
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Genre Section with Checkboxes -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">GENRE</h5>
+            <button class="btn btn-link p-0 border-0 filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#genreCollapse">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        <div class="collapse show" id="genreCollapse">
+            <div class="card-body py-3">
+                <div class="form-check mb-2">
+                    <input class="form-check-input genre-checkbox" type="checkbox" id="genre-action" value="Action" @(currentGenres.Contains("Action") ? "checked" : "")>
+                    <label class="form-check-label" for="genre-action">Action</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input genre-checkbox" type="checkbox" id="genre-adventure" value="Action Adventure" @(currentGenres.Contains("Action Adventure") ? "checked" : "")>
+                    <label class="form-check-label" for="genre-adventure">Action Adventure</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input genre-checkbox" type="checkbox" id="genre-puzzle" value="Action Puzzle" @(currentGenres.Contains("Action Puzzle") ? "checked" : "")>
+                    <label class="form-check-label" for="genre-puzzle">Action Puzzle</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input genre-checkbox" type="checkbox" id="genre-rpg" value="Action RPG" @(currentGenres.Contains("Action RPG") ? "checked" : "")>
+                    <label class="form-check-label" for="genre-rpg">Action RPG</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input genre-checkbox" type="checkbox" id="genre-adventure-only" value="Adventure" @(currentGenres.Contains("Adventure") ? "checked" : "")>
+                    <label class="form-check-label" for="genre-adventure-only">Adventure</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize the year range slider and filters
+    document.addEventListener('DOMContentLoaded', function() {
+        const yearSlider = document.getElementById('yearRangeSlider');
+        const selectedYearDisplay = document.getElementById('selectedYear');
+        const platformCheckboxes = document.querySelectorAll('.platform-checkbox');
+        const genreCheckboxes = document.querySelectorAll('.genre-checkbox');
+        const showMoreBtn = document.getElementById('showMorePlatforms');
+        
+        // Selected filters
+        let selectedYear = yearSlider.value;
+        let selectedPlatforms = Array.from(platformCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+            
+        let selectedGenres = Array.from(genreCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+        
+        // Function to apply filters and update the game list
+        function applyFilters() {
+            // Build the query string with all selected filters
+            let queryParams = [];
+            
+            // Add selected year if not default
+            if (selectedYear != 1958) {
+                queryParams.push(`year=${selectedYear}`);
+            }
+            
+            // Add selected platforms
+            if (selectedPlatforms.length > 0) {
+                queryParams.push(`platforms=${selectedPlatforms.join(',')}`);
+            }
+            
+            // Add selected genres
+            if (selectedGenres.length > 0) {
+                queryParams.push(`genres=${selectedGenres.join(',')}`);
+            }
+            
+            // Create the URL with query parameters
+            let url = '/Game/Index';
+            if (queryParams.length > 0) {
+                url += '?' + queryParams.join('&');
+            }
+            
+            // For better user experience, just redirect to the filtered URL
+            // instead of using AJAX to avoid partial page reloads
+            window.location.href = url;
+        }
+        
+        // Year slider functionality
+        if (yearSlider) {
+            yearSlider.addEventListener('input', function() {
+                // Update UI to show selected year
+                selectedYear = this.value;
+                selectedYearDisplay.textContent = selectedYear;
+            });
+            
+            yearSlider.addEventListener('change', function() {
+                // Apply filters when slider is released
+                applyFilters();
+            });
+        }
+        
+        // Platform checkboxes
+        platformCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Update selected platforms list
+                selectedPlatforms = Array.from(platformCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+                
+                // Apply filters
+                applyFilters();
+            });
+        });
+        
+        // Genre checkboxes
+        genreCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Update selected genres list
+                selectedGenres = Array.from(genreCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+                
+                // Apply filters
+                applyFilters();
+            });
+        });
+        
+        // Handle Show More button for platforms
+        if (showMoreBtn) {
+            showMoreBtn.addEventListener('click', function() {
+                // Add more platforms dynamically
+                const platformsContainer = document.querySelector('#platformsCollapse .card-body');
+                
+                // Example: Adding more platforms
+                const morePlatforms = [
+                    { id: 'platform-ps4', value: 'PlayStation 4', label: 'PlayStation 4' },
+                    { id: 'platform-xboxone', value: 'Xbox One', label: 'Xbox One' },
+                    { id: 'platform-3ds', value: 'Nintendo 3DS', label: 'Nintendo 3DS' }
+                ];
+                
+                morePlatforms.forEach(platform => {
+                    // Check if platform already exists
+                    if (!document.getElementById(platform.id)) {
+                        const div = document.createElement('div');
+                        div.classList.add('form-check', 'mb-2');
+                        div.innerHTML = `
+                            <input class="form-check-input platform-checkbox" type="checkbox" id="${platform.id}" value="${platform.value}">
+                            <label class="form-check-label" for="${platform.id}">${platform.label}</label>
+                        `;
+                        
+                        // Insert before the Show More button
+                        platformsContainer.insertBefore(div, showMoreBtn);
+                        
+                        // Add event listener to the new checkbox
+                        const newCheckbox = div.querySelector('input');
+                        newCheckbox.addEventListener('change', function() {
+                            selectedPlatforms = Array.from(document.querySelectorAll('.platform-checkbox'))
+                                .filter(cb => cb.checked)
+                                .map(cb => cb.value);
+                            
+                            applyFilters();
+                        });
+                    }
+                });
+                
+                // Hide the Show More button after showing all platforms
+                this.style.display = 'none';
+            });
+        }
+    });
+</script>
+
+<style>
+    .filter-container .card-header {
+        background-color: white;
+        border-bottom: none;
+        padding: 1rem;
+    }
+    
+    .filter-container .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+    
+    .filter-container h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .form-check-label {
+        font-size: 0.9rem;
+    }
+    
+    #showMorePlatforms {
+        color: var(--primary-color);
+        font-size: 0.9rem;
+    }
+    
+    /* Style for range slider thumb */
+    .form-range::-webkit-slider-thumb {
+        background-color: var(--primary-color);
+    }
+    
+    .form-range::-moz-range-thumb {
+        background-color: var(--primary-color);
+    }
+    
+    .form-range::-ms-thumb {
+        background-color: var(--primary-color);
+    }
+    
+    /* Display for selected year */
+    #selectedYear {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    /* Highlight checked checkboxes */
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    /* Reset link */
+    .reset-link {
+        color: var(--accent-color) !important;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    /* Filter toggle button */
+    .filter-toggle {
+        color: var(--primary-color) !important;
+    }
+    
+    /* Show more button */
+    .show-more-btn {
+        color: var(--primary-color) !important;
+    }
+    
+    .show-more-btn:hover {
+        color: var(--accent-color) !important;
+    }
+</style> 

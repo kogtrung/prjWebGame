@@ -1,0 +1,86 @@
+﻿@model WebGame.Models.NewsPost
+@{
+    ViewData["Title"] = "Thêm / Cập nhật bài viết";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    <form asp-action="Add" method="post">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="mb-3">
+            <label class="form-label">Tiêu đề</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tóm tắt</label>
+            <textarea asp-for="Summary" class="form-control"></textarea>
+            <span asp-validation-for="Summary" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Thể loại game</label>
+            <select asp-for="GameCategoryId" class="form-select" asp-items="ViewBag.GameCategories">
+                <option value="">-- Chọn thể loại --</option>
+            </select>
+            
+            <span asp-validation-for="GameCategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Hình ảnh (URL)</label>
+            <input asp-for="ImageUrl" class="form-control" />
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nội dung</label>
+            <textarea asp-for="Content" id="ContentEditor" class="form-control" rows="8"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">💾 Lưu</button>
+        <a asp-action="Index" class="btn btn-secondary">🔙 Quay lại</a>
+    </form>
+
+    <form asp-controller="GameCategory" asp-action="Index" method="get" class="d-inline mt-3">
+        <button type="submit" class="btn btn-gradient btn-lg">
+            🎮 Thêm thể loại game
+        </button>
+    </form>
+
+    @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#ContentEditor').summernote({
+                height: 300,
+                placeholder: 'Nhập nội dung bài viết...',
+                callbacks: {
+                    onChange: function (contents) {
+                        $("#ContentEditor").val(contents);
+                    }
+                },
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview']]
+                ]
+            });
+        });
+    </script>
+    }
+}
+else
+{
+    <p class="text-danger">Bạn không có quyền thêm bài viết.</p>
+}

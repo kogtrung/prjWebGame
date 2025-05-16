@@ -1,0 +1,283 @@
+﻿@model List<Game>
+
+@{
+    ViewData["Title"] = "Top Rated Games";
+    var topRatedGames = Model.Where(g => g.MetaScore >= 90).ToList();
+    var currentPage = ViewBag.CurrentPage ?? 1;
+    var totalPages = ViewBag.TotalPages ?? 1;
+}
+
+<div class="main-content">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-background"></div>
+        <div class="container position-relative">
+            <div class="hero-text text-left">
+                <h1 class="section-title">TOP RATED GAMES</h1>
+                <div class="accent-line"></div>
+                <p class="section-subtitle">Only games with Metascore 90 or higher</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+
+            <!-- Right Column: Games Grid -->
+            <div class="col-lg-12">
+                @if (!topRatedGames.Any())
+                {
+                    <div class="alert alert-info">
+                        No top rated games found (Metascore ≥ 90).
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-4">
+                        @foreach (var game in topRatedGames)
+                        {
+                            <div class="col-lg-3 col-md-6 col-sm-6">
+                                <div class="game-card h-100">
+                                    <a href="@Url.Action("Details", new { id = game.Id })" class="game-card-link">
+                                        <div class="game-image-container">
+                                            <img src="@game.ImageUrl"
+                                                 alt="@game.Title"
+                                                 class="game-image"
+                                                 onerror="this.onerror=null; this.src='/images/game-placeholder.jpg';">
+                                            @if (game.MustPlay)
+                                            {
+                                                <img src="https://www.metacritic.com/a/img/icons/metacritic-badge-must-play.svg"
+                                                     alt="Must Play"
+                                                     class="must-play-badge">
+                                            }
+                                            <div class="metascore @(game.MetaScore >= 90 ? "positive" : (game.MetaScore >= 75 ? "mixed" : "negative"))">
+                                                @game.MetaScore
+                                            </div>
+                                        </div>
+                                        <div class="game-info">
+                                            <h3 class="game-title">@game.Title</h3>
+                                            <div class="game-meta">
+                                                <div class="platform">
+                                                    @await Html.PartialAsync("_PlatformDisplay", game)
+                                                </div>
+                                                <div class="release-date">@game.ReleaseDate?.ToString("MMMM d, yyyy")</div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <div class="d-flex justify-content-center mt-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                @if (currentPage > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("TopRated", new { page = currentPage - 1 })" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                }
+
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    <li class="page-item @(i == currentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("TopRated", new { page = i })">@i</a>
+                                    </li>
+                                }
+
+                                @if (currentPage < totalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("TopRated", new { page = currentPage + 1 })" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Bản giữ nguyên style bạn đã gửi ở trên */
+        .main-content {
+            background-color: #ffffff;
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .hero-section {
+            position: relative;
+            padding: 6rem 0;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            background-color: #111;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://cdn.wallpapersafari.com/14/81/2rVbjv.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            filter: blur(3px);
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.5) 100%);
+        }
+
+        .hero-text {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+            text-align: left;
+            max-width: 600px;
+            margin-left: 2rem;
+        }
+
+        .section-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #eee;
+        }
+
+        .accent-line {
+            height: 4px;
+            width: 80px;
+            background-color: #ff9900;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .game-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff;
+        }
+
+            .game-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            }
+
+        .game-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .game-image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .must-play-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 34px;
+            height: 34px;
+        }
+
+        .metascore {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .positive {
+            background-color: #6c3;
+        }
+
+        .mixed {
+            background-color: #fc3;
+            color: #000;
+        }
+
+        .negative {
+            background-color: #f00;
+        }
+
+        .game-info {
+            padding: 15px;
+        }
+
+        .game-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .game-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .pagination .page-link {
+            color: #333;
+            border-color: #ddd;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+    </style>
+}

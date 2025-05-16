@@ -1,0 +1,189 @@
+@model List<NewsPost>
+
+@{
+    ViewData["Title"] = "Gaming News & Reviews";
+}
+
+<!-- Hero Section -->
+<section class="news-hero">
+    <div class="news-hero-content">
+        <h1 class="news-hero-title">Latest Gaming News</h1>
+        <p class="news-hero-subtitle">Stay updated with the most recent gaming news, reviews, and industry updates</p>
+    </div>
+</section>
+
+<div class="main-container">
+    <!-- Filters Section -->
+    <div class="news-filters">
+        <div class="news-categories">
+            <button class="news-category-filter active">All</button>
+            <button class="news-category-filter">Game Reviews</button>
+            <button class="news-category-filter">Industry Updates</button>
+            <button class="news-category-filter">New Releases</button>
+            <button class="news-category-filter">Upcoming Games</button>
+        </div>
+        
+        <div class="news-sort">
+            <select class="news-sort-select">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="popular">Most Popular</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- News Grid -->
+    <div class="news-grid">
+        @{
+            var featuredNews = Model.FirstOrDefault();
+            var remainingNews = Model.Skip(1).ToList();
+        }
+        
+        @if (featuredNews != null)
+        {
+            <div class="news-card news-featured">
+                <div class="news-card-image">
+                    @if (!string.IsNullOrEmpty(featuredNews.ImageUrl))
+                    {
+                        <img src="@featuredNews.ImageUrl" alt="@featuredNews.Title" onerror="this.onerror=null; this.src='/images/news-placeholder.jpg';">
+                        <div class="news-card-category">Featured</div>
+                    }
+                    else
+                    {
+                        <img src="/images/news-placeholder.jpg" alt="@featuredNews.Title">
+                        <div class="news-card-category">Featured</div>
+                    }
+                </div>
+                <div class="news-card-content">
+                    <div class="news-card-date">@featuredNews.CreatedAt.ToString("MMMM dd, yyyy")</div>
+                    <h3 class="news-card-title">@featuredNews.Title</h3>
+                    <p class="news-card-description">@featuredNews.Summary</p>
+                    <div class="news-card-footer">
+                        <a href="#" class="read-more-link">
+                            Read Full Article
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        @foreach (var news in remainingNews)
+        {
+            <div class="news-card">
+                <div class="news-card-image">
+                    @if (!string.IsNullOrEmpty(news.ImageUrl))
+                    {
+                        <img src="@news.ImageUrl" alt="@news.Title" onerror="this.onerror=null; this.src='/images/news-placeholder.jpg';">
+                        
+                        @if (news.Category != null)
+                        {
+                            <div class="news-card-category">@news.Category</div>
+                        }
+                        else
+                        {
+                            <div class="news-card-category">News</div>
+                        }
+                    }
+                    else
+                    {
+                        <img src="/images/news-placeholder.jpg" alt="@news.Title">
+                        <div class="news-card-category">News</div>
+                    }
+                </div>
+                <div class="news-card-content">
+                    <div class="news-card-date">@news.CreatedAt.ToString("MMMM dd, yyyy")</div>
+                    <h3 class="news-card-title">@news.Title</h3>
+                    <p class="news-card-description">@news.Summary</p>
+                    <div class="news-card-footer">
+                        <a href="#" class="read-more-link">
+                            Read Full Article
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        <!-- Add dummy news cards to fill the grid if we have few real news -->
+        @if (Model.Count < 6)
+        {
+            var dummyTitles = new[] { 
+                "Elden Ring DLC Release Date Announced", 
+                "Sony Reveals Next-Gen PlayStation Features", 
+                "Nintendo Switch 2: What We Know So Far",
+                "Top 10 Most Anticipated Games of 2025",
+                "Xbox Game Pass Adding Major New Titles"
+            };
+            
+            var dummyDescriptions = new[] {
+                "FromSoftware has finally revealed the release date for the highly anticipated Elden Ring DLC, Shadow of the Erdtree. Players can expect new challenging bosses and expanded lore.",
+                "Sony has unveiled exciting new features for their next-generation PlayStation console, promising revolutionary gameplay experiences and unprecedented graphical capabilities.",
+                "Nintendo is rumored to be working on the successor to the Switch. Here's everything we've gathered about the potential specs, features, and release window.",
+                "The gaming industry is preparing for an incredible year ahead. We've compiled the most exciting upcoming releases that gamers can't wait to get their hands on.",
+                "Microsoft continues to enhance the value of Xbox Game Pass with several AAA titles joining the service next month. Find out which games are being added."
+            };
+            
+            for (int i = 0; i < Math.Min(5, 6 - Model.Count); i++)
+            {
+                <div class="news-card">
+                    <div class="news-card-image">
+                        <img src="/images/news-placeholder-@(i+1).jpg" alt="Gaming News" onerror="this.onerror=null; this.src='/images/news-placeholder.jpg';">
+                        <div class="news-card-category">Gaming</div>
+                    </div>
+                    <div class="news-card-content">
+                        <div class="news-card-date">@DateTime.Now.AddDays(-i).ToString("MMMM dd, yyyy")</div>
+                        <h3 class="news-card-title">@dummyTitles[i]</h3>
+                        <p class="news-card-description">@dummyDescriptions[i]</p>
+                        <div class="news-card-footer">
+                            <a href="#" class="read-more-link">
+                                Read Full Article
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    
+    <!-- Pagination -->
+    <div class="news-pagination">
+        <a href="#" class="news-pagination-item active">1</a>
+        <a href="#" class="news-pagination-item">2</a>
+        <a href="#" class="news-pagination-item">3</a>
+        <span class="news-pagination-item">...</span>
+        <a href="#" class="news-pagination-item">10</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize filters
+        document.addEventListener('DOMContentLoaded', function() {
+            // Category filters
+            const categoryFilters = document.querySelectorAll('.news-category-filter');
+            categoryFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    // Remove active class from all filters
+                    categoryFilters.forEach(f => f.classList.remove('active'));
+                    // Add active class to clicked filter
+                    this.classList.add('active');
+                    
+                    // In a real application, you would filter the news here
+                    // For now, we'll just show a message
+                    console.log('Filter selected:', this.textContent);
+                });
+            });
+            
+            // Sort dropdown
+            const sortSelect = document.querySelector('.news-sort-select');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    // In a real application, you would sort the news here
+                    console.log('Sort method selected:', this.value);
+                });
+            }
+        });
+    </script>
+} 

@@ -1,0 +1,699 @@
+﻿/* ===== Cấu hình chung ===== */
+html {
+    font-size: 14px;
+    scroll-behavior: smooth;
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+    margin-bottom: 60px;
+}
+
+/* ===== Hiệu ứng cơ bản ===== */
+.smooth-transition {
+    transition: all 0.3s ease-in-out;
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+/* ===== Phần Header và Navigation ===== */
+header {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: 700;
+}
+
+.nav-link {
+    position: relative;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.nav-link:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #ffb03a;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover:after,
+.nav-link.active:after {
+    width: 80%;
+}
+
+/* ===== Header Search Box ===== */
+.search-container {
+    position: relative;
+    width: 250px;
+}
+
+.search-input {
+    border-radius: 20px;
+    padding-right: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-search {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0 15px;
+}
+
+.btn-search:hover {
+    color: #fff;
+}
+
+/* ===== Hero Section ===== */
+.hero-section {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+    padding: 100px 0;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-section p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.browse-btn {
+    display: inline-block;
+    background-color: #ffb03a;
+    color: #1c242c;
+    font-weight: 600;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid #ffb03a;
+    box-shadow: 0 4px 15px rgba(255, 176, 58, 0.3);
+}
+
+.browse-btn:hover {
+    background-color: #ffc357;
+    color: #1c242c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 176, 58, 0.4);
+}
+
+/* ===== Game Cards ===== */
+.game-card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    height: 100%;
+    background-color: #fff;
+}
+
+.game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.game-image-container {
+    position: relative;
+    height: 0;
+    /*padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    overflow: hidden;
+}
+
+.game-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+    background-color: #f0f0f0;
+    min-height: 150px;
+}
+
+.game-card:hover .game-image {
+    transform: scale(1.05);
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.game-card:hover .game-overlay {
+    opacity: 1;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+/* ===== Metascore Styles ===== */
+.metascore {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.metascore.excellent {
+    background-color: #6c3;
+}
+
+.metascore.good {
+    background-color: #fc3;
+    color: #333;
+}
+
+.metascore.mixed {
+    background-color: #f00;
+}
+
+/* ===== Section Styling ===== */
+.section-title {
+    position: relative;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #1c242c;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: #ffb03a;
+}
+
+section {
+    padding: 0px 0;
+}
+
+section.bg-light {
+    background-color: #f8f9fa;
+}
+
+/* ===== News Cards ===== */
+.news-card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+/* ===== Footer Styling ===== */
+footer {
+    background-color: #1c242c;
+    color: #fff;
+    padding-top: 3rem;
+    position: relative;
+}
+
+footer a {
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: #ffb03a;
+    text-decoration: none;
+}
+
+footer .footer-title {
+    color: #ffb03a;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
+}
+
+.social-icons a {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 36px;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    background: #ffb03a;
+    color: #1c242c;
+    transform: translateY(-3px);
+}
+
+.copyright-bar {
+    background-color: #131920;
+    padding: 15px 0;
+    font-size: 0.85rem;
+    color: #999;
+}
+
+/* Animation keyframes */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Video error styling */
+.video-fallback, .video-error {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1c1c1c;
+    color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.video-fallback i, .video-error i {
+    color: #f8b739;
+    margin-bottom: 10px;
+}
+
+.video-container {
+    position: relative;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.ratio iframe {
+    border-radius: 8px;
+    background-color: #000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-section p {
+        font-size: 1rem;
+    }
+    
+    .search-container {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* Game Quickview Modal Styles */
+.game-quickview-modal .modal-content {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.game-quickview-image {
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    object-fit: cover;
+}
+
+.quickview-metascore {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    border-radius: 4px;
+}
+
+.quickview-metascore.high {
+    background-color: #6c3;
+    border: 1px solid #4b1;
+}
+
+.quickview-metascore.medium {
+    background-color: #fc3;
+    border: 1px solid #eb1;
+    color: #333;
+}
+
+.quickview-metascore.low {
+    background-color: #f00;
+    border: 1px solid #d00;
+}
+
+.game-quickview-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.game-info-grid {
+    background-color: rgba(0,0,0,0.03);
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.game-quickview-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.game-quickview-trailer-container {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.game-quickview-trailer-container h5 {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+@media (max-width: 767px) {
+    .quickview-metascore {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .game-quickview-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* Fix for image loading issues */
+.game-image {
+    background-color: #f0f0f0;
+    min-height: 150px;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Add styles for the game platform display */
+.game-platform {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    background-color: #f0f0f0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+.platform-multiple {
+    background-color: #e7f0f7;
+    color: #3572b0;
+}
+
+/* Platform badge styles */
+.platform-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    margin: 0 2px 2px 0;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.platform-badge i {
+    margin-right: 3px;
+}
+
+.platform-badge.playstation-5 {
+    background-color: #003791;
+    color: white;
+}
+
+.platform-badge.playstation-4 {
+    background-color: #003087;
+    color: white;
+}
+
+.platform-badge.xbox-series-x {
+    background-color: #107C10;
+    color: white;
+}
+
+.platform-badge.xbox-one {
+    background-color: #0e7609;
+    color: white;
+}
+
+.platform-badge.nintendo-switch {
+    background-color: #E60012;
+    color: white;
+}
+
+.platform-badge.pc {
+    background-color: #333333;
+    color: white;
+}
+
+.game-platform {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+}
+
+/* Game card styles */
+.game-card {
+    transition: transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+}
+
+.game-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.game-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.game-card:hover .game-image {
+    transform: scale(1.05);
+}
+
+.metascore {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    z-index: 2;
+}
+
+.metascore.high, .metascore.positive {
+    background-color: #6c3;
+}
+
+.metascore.medium, .metascore.mixed {
+    background-color: #fc3;
+}
+
+.metascore.low, .metascore.negative {
+    background-color: #f00;
+}
+
+.must-play-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #FFD700;
+    color: #000;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    z-index: 2;
+}
+
+/* Game details styles */
+.game-info {
+    padding: 12px;
+}
+
+.game-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.game-meta {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.release-date {
+    margin-top: 4px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .game-image {
+        height: 150px;
+    }
+}

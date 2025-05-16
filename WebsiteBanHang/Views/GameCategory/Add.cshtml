@@ -1,0 +1,23 @@
+﻿    @model WebGame.Models.GameCategory
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+@if (User.IsInRole("Admin"))
+{
+
+<h2>Thêm thể loại game</h2>
+
+<form asp-action="Add" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">✔️ Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary">🔙 Trở lại</a>
+</form>
+
+}
+else
+{
+	<p class="text-danger">Bạn không có quyền .</p>
+}

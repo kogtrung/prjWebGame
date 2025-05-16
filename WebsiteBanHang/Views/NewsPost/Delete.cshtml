@@ -1,0 +1,21 @@
+﻿@model WebGame.Models.NewsPost
+@{
+    ViewData["Title"] = "Xoá bài viết";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (User.IsInRole("Admin")){
+<h2>Bạn có chắc muốn xoá bài viết?</h2>
+
+<div class="mb-3">
+    <strong>Tiêu đề:</strong> @Model.Title
+</div>
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Xoá</button>
+    <a asp-action="Index" class="btn btn-secondary">Huỷ</a>
+</form>
+}
+else
+{
+	<p class="text-danger">Bạn không có quyền xoá bài viết.</p>
+}

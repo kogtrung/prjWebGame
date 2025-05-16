@@ -1,0 +1,89 @@
+@model IEnumerable<WebGame.Models.Game>
+
+@{
+    ViewData["Title"] = "Kết quả tìm kiếm";
+}
+
+<div class="container mt-4">
+    <div class="search-header mb-4">
+        <h1 class="h2">Kết quả tìm kiếm cho: <span class="search-query">@ViewBag.SearchQuery</span></h1>
+        <p class="text-muted">Tìm thấy @ViewBag.ResultCount kết quả</p>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row search-results-container">
+            @foreach (var game in Model)
+            {
+                <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                    <div class="game-card">
+                        <a asp-controller="Game" asp-action="Details" asp-route-id="@game.Id" class="text-decoration-none">
+                            <div class="game-image-container">
+                                @if (!string.IsNullOrEmpty(game.ImageUrl))
+                                {
+                                    <img src="@game.ImageUrl" class="game-image" alt="@game.Title" />
+                                }
+                                else
+                                {
+                                    <div class="no-image">
+                                        <div class="game-title-overlay">@game.Title</div>
+                                    </div>
+                                }
+                                <div class="metascore @(game.MetaScore >= 90 ? "high" : (game.MetaScore >= 75 ? "medium" : "low"))">
+                                    @game.MetaScore
+                                </div>
+                            </div>
+                            <div class="game-info">
+                                <h3 class="game-title text-dark">@game.Title</h3>
+                                <p class="game-platform">@game.Platform</p>
+                                <p class="game-date">@(game.ReleaseDate.HasValue ? game.ReleaseDate.Value.ToString("MMM d, yyyy") : "TBA")</p>
+
+                                @if (!string.IsNullOrEmpty(game.Description))
+                                {
+                                    <p class="game-description">@(game.Description?.Length > 200 ? game.Description.Substring(0, 200) + "..." : game.Description)</p>
+                                }
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">Không tìm thấy game nào phù hợp với từ khóa "<strong>@ViewBag.SearchQuery</strong>".</p>
+            <p class="mt-2">Gợi ý:</p>
+            <ul>
+                <li>Kiểm tra lại chính tả</li>
+                <li>Sử dụng từ khóa khác</li>
+                <li>Tìm kiếm theo thể loại hoặc nền tảng</li>
+            </ul>
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-controller="Game" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách game
+        </a>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .search-query {
+            color: #007bff;
+            font-weight: 600;
+        }
+
+        .game-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+
+        .game-card a {
+            text-decoration: none;
+        }
+    </style>
+}

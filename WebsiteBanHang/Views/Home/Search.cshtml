@@ -1,0 +1,194 @@
+@model List<Game>
+
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="search-header mb-4">
+                <h2>Search Results for: <span class="search-term">@ViewBag.SearchTerm</span></h2>
+                <p>Found @ViewBag.ResultCount result(s)</p>
+                
+                <form class="d-flex mt-3" asp-controller="Home" asp-action="Search" method="get">
+                    <input class="form-control me-2" type="search" name="q" value="@ViewBag.SearchTerm" placeholder="Search games, news..." aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="section-divider">
+            <h3>Games (@Model.Count)</h3>
+            <hr />
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var game in Model)
+            {
+                <div class="col">
+                    <div class="card game-card h-100">
+                        <div class="position-relative">
+                            <img src="@game.ImageUrl" class="card-img-top game-image" alt="@game.Title" onerror="this.onerror=null; this.src='/images/game-placeholder.jpg'; this.alt='@game.Title';">
+                            <div class="metascore @(game.MetaScore >= 90 ? "metascore-high" : (game.MetaScore >= 75 ? "metascore-medium" : "metascore-low"))">
+                                @game.MetaScore
+                            </div>
+                            @if (game.MetaScore >= 90)
+                            {
+                                <div class="must-play-badge">Must Play</div>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@game.Title</h5>
+                            <p class="card-text text-muted small">
+                                Released: @(game.ReleaseDate.HasValue ? game.ReleaseDate.Value.ToString("MMM dd, yyyy") : "TBA")<br>
+                                Platform: @await Html.PartialAsync("_PlatformDisplay", game)<br>
+                                Genre: @game.Genre
+                            </p>
+                            <p class="card-text game-description">@(game.Description?.Length > 100 ? game.Description.Substring(0, 100) + "..." : game.Description)</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a asp-controller="Game" asp-action="Details" asp-route-id="@game.Id" class="btn btn-outline-primary btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">No games found matching your search term.</div>
+    }
+
+    @if (ViewBag.NewsResults != null && ViewBag.NewsResults.Count > 0)
+    {
+        <div class="section-divider mt-5">
+            <h3>News (@ViewBag.NewsResults.Count)</h3>
+            <hr />
+        </div>
+
+        <div class="row">
+            @foreach (var news in ViewBag.NewsResults)
+            {
+                <div class="col-md-12 mb-3">
+                    <div class="card news-card">
+                        <div class="card-body">
+                            <h5 class="card-title">@news.Title</h5>
+                            @if (news.Category != null)
+                            {
+                                <span class="badge bg-info">@news.Category</span>
+                            }
+                            <p class="text-muted small">@news.CreatedAt.ToString("MMM dd, yyyy")</p>
+                            <p class="card-text">@(news.Content?.Length > 200 ? news.Content.Substring(0, 200) + "..." : news.Content)</p>
+                            <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-sm btn-outline-secondary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (!Model.Any() && (ViewBag.NewsResults == null || ViewBag.NewsResults.Count == 0))
+    {
+        <div class="no-results text-center my-5">
+            <img src="/images/no-results.svg" alt="No results found" style="max-width: 200px;" />
+            <h3 class="mt-4">No results found</h3>
+            <p class="text-muted">Try different keywords or browse our game catalog</p>
+            <a asp-controller="Game" asp-action="Index" class="btn btn-primary mt-3">Browse All Games</a>
+        </div>
+    }
+</div>
+
+<style>
+    .search-header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    
+    .search-term {
+        color: #0d6efd;
+        font-weight: bold;
+    }
+    
+    .section-divider {
+        margin: 30px 0 20px 0;
+    }
+    
+    .game-card {
+        transition: transform 0.2s;
+        border: 1px solid rgba(0,0,0,0.125);
+    }
+    
+    .game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .game-image {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .metascore {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        border-radius: 4px;
+    }
+    
+    .metascore-high {
+        background-color: #6c3;
+    }
+    
+    .metascore-medium {
+        background-color: #fc3;
+    }
+    
+    .metascore-low {
+        background-color: #f00;
+    }
+    
+    .must-play-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #111;
+        color: gold;
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+    
+    .platform-tag {
+        font-weight: 500;
+        color: #6c757d;
+    }
+    
+    .game-description {
+        font-size: 0.9rem;
+        color: #495057;
+    }
+    
+    .news-card {
+        transition: transform 0.2s;
+    }
+    
+    .news-card:hover {
+        transform: translateX(5px);
+    }
+    
+    .no-results {
+        margin: 50px 0;
+    }
+</style> 

@@ -1,0 +1,846 @@
+﻿@model List<Game>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    /* Color Variables */
+    :root {
+        --primary-color: #3f51b5;
+        --primary-dark: #303f9f;
+        --primary-light: #7986cb;
+        --accent-color: #ff4081;
+        --accent-dark: #f50057;
+        --accent-light: #ff80ab;
+        --text-on-primary: #ffffff;
+        --text-primary: #212121;
+        --text-secondary: #757575;
+        --border-color: #e0e0e0;
+        --background-light: #f5f5f5;
+        --success-color: #4caf50;
+        --warning-color: #ff9800;
+        --error-color: #f44336;
+    }
+    
+    /* General styles */
+    body {
+        background-color: var(--background-light);
+        color: var(--text-primary);
+    }
+    
+    .section-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+        position: relative;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    /* Game cards */
+    .game-card {
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+        border: 1px solid var(--border-color);
+        background-color: #fff;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-bottom: 20px;
+    }
+    
+    .game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(63, 81, 181, 0.2);
+    }
+    
+    .game-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    
+    .game-image-container {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .game-image {
+        height: 180px;
+        object-fit: cover;
+        width: 100%;
+    }
+    
+    .game-content {
+        padding: 15px;
+    }
+    
+    .game-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .game-platform {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+    
+    .game-release-date {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+    
+    /* Metascore badge */
+    .metascore {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    
+    .metascore-high {
+        background-color: var(--success-color);
+        border: 1px solid #3d8b40;
+    }
+    
+    .metascore-medium {
+        background-color: var(--warning-color);
+        border: 1px solid #e68900;
+    }
+    
+    .metascore-low {
+        background-color: var(--error-color);
+        border: 1px solid #d32f2f;
+    }
+    
+    /* Must-play badge */
+    .must-play {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 3px;
+    }
+    
+    /* 2025 Games Section Styling */
+    .games-2025-section {
+        background-color: black;
+        padding: 30px;
+        margin: 20px 0 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(63, 81, 181, 0.3);
+    }
+    
+    .games-2025-title {
+        color: #fff;
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        /* position: relative; */
+        display: inline-block;
+    }
+    
+    .games-2025-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background-color: #ff4081;
+        margin-bottom: 1.5rem;
+    }
+    
+    .games-2025-view-all {
+        background-color: #ff4081;
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    
+    .games-2025-view-all:hover {
+        background-color: #f50057;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4);
+        color: white;
+    }
+    
+    /* 2025 Game cards specific styling */
+    .game-2025-card {
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 100%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .game-2025-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+    
+    .game-2025-content {
+        padding: 15px;
+    }
+    
+    .game-2025-title {
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: var(--text-primary);
+    }
+    
+    .game-2025-title a {
+        color: var(--text-primary);
+        text-decoration: none;
+    }
+    
+    .game-2025-title a:hover {
+        color: var(--primary-color);
+    }
+    
+    .game-2025-platforms {
+        margin-bottom: 10px;
+    }
+    
+    .platform-badge {
+        display: inline-block;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        color: white;
+    }
+    
+    .platform-pc {
+        background-color: #333;
+    }
+    
+    .platform-playstation {
+        background-color: #006FCD;
+    }
+    
+    .platform-xbox {
+        background-color: #107C10;
+    }
+    
+    .platform-nintendo {
+        background-color: #E60012;
+    }
+    
+    .game-2025-date {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+    
+    .must-play-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #ff4081;
+        color: white;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 3px;
+        z-index: 2;
+    }
+    
+    .score-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        border-radius: 4px;
+        font-size: 16px;
+        z-index: 2;
+    }
+    
+    .score-95-100 {
+        background-color: #4CAF50;
+    }
+    
+    .score-85-94 {
+        background-color: #7CB342;
+    }
+    
+    .score-75-84 {
+        background-color: #8BC34A;
+    }
+    
+    .score-60-74 {
+        background-color: #FFC107;
+    }
+    
+    .score-below-60 {
+        background-color: #F44336;
+    }
+    
+    /* Custom column class for 5 items in a row */
+    .col-xl-20p {
+        width: 20%;
+        flex: 0 0 auto;
+    }
+    
+    @@media (max-width: 1200px) {
+        .col-xl-20p {
+            width: auto;
+        }
+    }
+    
+    /* Filter section */
+    .filters {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .filter-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+    }
+    
+    .filter-group {
+        margin-bottom: 15px;
+    }
+    
+    .filter-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    
+    .filter-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    
+    .filter-option {
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .filter-option:hover, .filter-option.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    /* Game view toggle */
+    .view-toggle {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .view-option {
+        padding: 6px 12px;
+        background-color: #f1f3f5;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .view-option.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    /* Game count and sort */
+    .results-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .game-count {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    
+    .sort-options {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .sort-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    
+    .sort-select {
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        font-size: 14px;
+    }
+    
+    /* News section */
+    .news-card {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        background-color: #fff;
+        height: 100%;
+    }
+    
+    .news-image {
+        height: 180px;
+        object-fit: cover;
+        width: 100%;
+    }
+    
+    .news-content {
+        padding: 15px;
+    }
+    
+    .news-date {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+    }
+    
+    .news-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        line-height: 1.3;
+    }
+    
+    /* Hero section */
+    .hero-section {
+        background: linear-gradient(rgba(48, 63, 159, 0.8), rgba(63, 81, 181, 0.8)), url('https://wallpaper.dog/large/20493433.jpg');
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+        padding: 80px 0;
+        margin-bottom: 40px;
+    }
+    
+    .hero-title {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+    
+    .hero-subtitle {
+        font-size: 18px;
+        margin-bottom: 25px;
+        max-width: 600px;
+    }
+    
+    /* Button styles */
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover, .btn-primary:focus {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+    
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-outline-primary:hover, .btn-outline-primary:focus {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    .alert-info {
+        background-color: var(--primary-light);
+        color: white;
+        border-color: var(--primary-color);
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                    <h1>Discover Your Next Favorite Game</h1>
+                <p>Find the latest releases, top-rated games, and upcoming titles across all platforms.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+    <div class="container">
+        <div class="row">
+        <!-- Sidebar with filters -->
+        <div class="col-lg-3">
+            @await Html.PartialAsync("_FilterSidebar")
+        </div>
+        
+        <!-- Main content area -->
+        <div class="col-lg-9">
+            <!-- Must-Play Games -->
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">Must-Play Games</h2>
+                    <a href="/Game/TopRated" class="btn btn-outline-primary">View All</a>
+                </div>
+                
+        <div class="row">
+                    @{
+                        var mustPlayGames = Model.Where(g => g.MetaScore >= 90).Take(4).ToList();
+                        foreach (var game in mustPlayGames)
+                        {
+                            <div class="col-md-6 col-lg-3 mb-4">
+                                <partial name="_GameListItem" model="game" />
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+            
+            <!-- New Releases -->
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">New Releases</h2>
+                    <a href="/Game/NewReleases" class="btn btn-outline-primary">View All</a>
+                </div>
+
+                <div class="row">
+                    @{
+                        var newReleases = Model
+                        .Where(g => g.ReleaseDate <= DateTime.Now && !string.IsNullOrEmpty(g.ImageUrl))
+                        .OrderByDescending(g => g.ReleaseDate)
+                        .Take(4)
+                        .ToList();
+
+                        foreach (var game in newReleases)
+                        {
+                            <div class="col-md-6 col-lg-3 mb-4">
+                                <partial name="_GameListItem" model="game" />
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+
+            
+            <!-- Games Coming Soon Section -->
+            <section class="games-2025-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="games-2025-title">Games Coming Soon</h2>
+                    <a href="/Game/ComingSoon" class="btn games-2025-view-all">View All</a>
+                </div>
+                <div class="row">
+                    @{
+                        var comingSoonGames = Model
+                        .Where(g => g.ReleaseDate > DateTime.Now)
+                        .OrderBy(g => g.ReleaseDate)
+                        .Take(4)
+                        .ToList();
+
+                        foreach (var game in comingSoonGames)
+                        {
+                            <div class="col-md-6 col-lg-3 mb-4">
+                                <partial name="_GameListItem" model="game" />
+                            </div>
+                        }
+                    }
+                </div>
+                        
+            </section>
+        </div>
+    </div>
+</div>
+
+<!-- Game Details Modal -->
+<div class="modal fade" id="gameDetailsModal" tabindex="-1" aria-labelledby="gameDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="gameDetailsModalLabel">Game Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img id="modalGameImage" src="" alt="Game Image" class="img-fluid mb-3 rounded">
+                        <div id="modalGameScore" class="mb-3"></div>
+                        <div id="modalGamePlatforms" class="mb-3"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3 id="modalGameTitle" class="mb-3"></h3>
+                        <p class="text-muted mb-3">Release Date: <span id="modalGameReleaseDate"></span></p>
+                        <h5>Description</h5>
+                        <p id="modalGameDescription" class="mb-4"></p>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h5>Developer</h5>
+                                <p id="modalGameDeveloper"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Publisher</h5>
+                                <p id="modalGamePublisher"></p>
+                            </div>
+                        </div>
+                        
+                        <h5>Where to Buy</h5>
+                        <div id="modalGameStores" class="mb-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Update button classes to match new color scheme
+        document.addEventListener("DOMContentLoaded", function() {
+            // Update bootstrap buttons to match our color scheme
+            const buttons = document.querySelectorAll('.btn-primary, .btn-outline-primary');
+            buttons.forEach(button => {
+                if (button.classList.contains('btn-primary')) {
+                    button.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+                    button.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+                } else if (button.classList.contains('btn-outline-primary')) {
+                    button.style.color = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+                    button.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+                }
+            });
+            
+            // Filter functionality
+            const filterOptions = document.querySelectorAll('.filter-option');
+            
+            filterOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Find all options in the same group
+                    const parentGroup = this.closest('.filter-options');
+                    const siblings = parentGroup.querySelectorAll('.filter-option');
+                    
+                    // Remove active class from siblings
+                    siblings.forEach(sib => sib.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Here you would typically filter the games
+                    // For demo purposes, we'll just update the count
+                    document.getElementById('game-count').textContent = 
+                        Math.floor(Math.random() * 50) + 10;
+                });
+            });
+            
+            // Sort functionality
+            const sortSelect = document.querySelector('.sort-select');
+            if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
+                // Here you would typically sort the games
+                console.log('Sorting by: ' + this.value);
+            });
+            }
+        });
+        
+        // Game details data
+        const gameData = {
+            'silent-hill-2': {
+                title: 'Silent Hill 2 Remake',
+                image: 'https://i.ytimg.com/vi/pyC_qiW_4ZY/maxresdefault.jpg',
+                score: 91,
+                releaseDate: 'February 21, 2025',
+                platforms: ['PC', 'PlayStation 5', 'Xbox Series X'],
+                description: 'Silent Hill 2 Remake is a complete reimagining of the classic psychological horror game originally released in 2001. The remake features completely rebuilt visuals, modernized controls, and an expanded story while staying true to the haunting atmosphere and psychological horror that made the original a masterpiece.',
+                developer: 'Bloober Team',
+                publisher: 'Konami',
+                releaseStatus: 'Released 45 days ago',
+                stores: [
+                    { name: 'Steam', price: '$59.99', platform: 'PC', url: 'https://store.steampowered.com/app/2124490/SILENT_HILL_2/' },
+                    { name: 'PlayStation Store', price: '$69.99', platform: 'PS5', url: 'https://store.playstation.com/en-us/concept/10003344' },
+                    { name: 'Microsoft Store', price: '$69.99', platform: 'Xbox', url: 'https://www.xbox.com/en-US/games/silent-hill-2' }
+                ]
+            },
+            'perfect-dark': {
+                title: 'Perfect Dark',
+                image: 'https://i.ytimg.com/vi/S--lFTxAVs8/maxresdefault.jpg',
+                score: 89,
+                releaseDate: 'December 6, 2024',
+                platforms: ['PC', 'Xbox Series X'],
+                description: 'Perfect Dark is a revival of the classic first-person shooter franchise. Set in a futuristic world of corporate espionage and international intrigue, players take on the role of Joanna Dark, an elite secret agent. The game features a mix of stealth and action gameplay with a variety of high-tech weapons and gadgets.',
+                developer: 'The Initiative',
+                publisher: 'Xbox Game Studios',
+                releaseStatus: 'Coming Soon',
+                stores: [
+                    { name: 'Steam', price: '$59.99', platform: 'PC', url: 'https://store.steampowered.com/app/perfect-dark' },
+                    { name: 'Microsoft Store', price: '$59.99', platform: 'PC/Xbox', url: 'https://www.xbox.com/en-US/games/perfect-dark' }
+                ]
+            },
+            'hollow-knight-silksong': {
+                title: 'Hollow Knight: Silksong',
+                image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1030300/header.jpg',
+                score: 95,
+                releaseDate: 'October 31, 2024',
+                platforms: ['PC', 'Xbox Series X', 'Nintendo Switch'],
+                description: 'Hollow Knight: Silksong is the eagerly anticipated sequel to the critically acclaimed Metroidvania game Hollow Knight. Players control Hornet, a princess-protector of Hallownest, as she explores a new kingdom. With new abilities, enemies, and challenges, Silksong expands on the beautiful, haunting world of its predecessor.',
+                developer: 'Team Cherry',
+                publisher: 'Team Cherry',
+                releaseStatus: 'Coming Soon',
+                stores: [
+                    { name: 'Steam', price: '$29.99', platform: 'PC', url: 'https://store.steampowered.com/app/1030300/Hollow_Knight_Silksong/' },
+                    { name: 'Microsoft Store', price: '$29.99', platform: 'Xbox', url: 'https://www.xbox.com/en-US/games/hollow-knight-silksong' },
+                    { name: 'Nintendo eShop', price: '$29.99', platform: 'Switch', url: 'https://www.nintendo.com/store/products/hollow-knight-silksong-switch/' }
+                ]
+            },
+            'dragon-age-veilguard': {
+                title: 'Dragon Age: The Veilguard',
+                image: 'https://th.bing.com/th/id/OIP.acNCA4qV0fqheCTw-Y4RcwHaEK?w=301&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7',
+                score: 91,
+                releaseDate: 'Fall 2024',
+                platforms: ['PC', 'PlayStation 5', 'Xbox Series X'],
+                description: 'Dragon Age: The Veilguard is the latest installment in BioWare\'s epic fantasy RPG series. Set in the world of Thedas, players will journey through stunning environments, encounter rich characters, and make choices that shape the fate of the world. With an emphasis on player choice and companion relationships, The Veilguard aims to bring the best of Dragon Age to a new generation.',
+                developer: 'BioWare',
+                publisher: 'Electronic Arts',
+                releaseStatus: 'Coming Soon',
+                stores: [
+                    { name: 'Steam', price: '$69.99', platform: 'PC', url: 'https://store.steampowered.com/app/2399830/Dragon_Age_The_Veilguard/' },
+                    { name: 'EA App', price: '$69.99', platform: 'PC', url: 'https://www.ea.com/games/dragon-age/dragon-age-the-veilguard' },
+                    { name: 'PlayStation Store', price: '$69.99', platform: 'PS5', url: 'https://store.playstation.com/en-us/concept/10008852' },
+                    { name: 'Microsoft Store', price: '$69.99', platform: 'Xbox', url: 'https://www.xbox.com/en-US/games/dragon-age-the-veilguard' }
+                ]
+            }
+        };
+        
+        // Function to show game details in modal
+        function showGameDetails(gameId) {
+            const game = gameData[gameId];
+            if (!game) return;
+            
+            // Set modal content
+            document.getElementById('modalGameTitle').textContent = game.title;
+            document.getElementById('modalGameImage').src = game.image;
+            document.getElementById('modalGameImage').alt = game.title;
+            
+            // Set release date with status
+            let releaseDateHtml = `<strong>Release:</strong> ${game.releaseDate}`;
+            if (game.releaseStatus) {
+                releaseDateHtml += `<br><span class="text-danger"><i class="far fa-clock me-1"></i> ${game.releaseStatus}</span>`;
+            }
+            document.getElementById('modalGameReleaseDate').innerHTML = releaseDateHtml;
+            
+            document.getElementById('modalGameDescription').textContent = game.description;
+            document.getElementById('modalGameDeveloper').textContent = game.developer;
+            document.getElementById('modalGamePublisher').textContent = game.publisher;
+            
+            // Set score
+            let scoreClass = 'score-below-60';
+            if (game.score >= 95) scoreClass = 'score-95-100';
+            else if (game.score >= 85) scoreClass = 'score-85-94';
+            else if (game.score >= 75) scoreClass = 'score-75-84';
+            else if (game.score >= 60) scoreClass = 'score-60-74';
+            
+            document.getElementById('modalGameScore').innerHTML = `
+                <span class="badge ${scoreClass}" style="font-size: 18px; padding: 8px 16px;">
+                    Metascore: ${game.score}
+                </span>
+            `;
+            
+            // Set platforms
+            let platformsHtml = '';
+            game.platforms.forEach(platform => {
+                let platformClass = '';
+                if (platform.includes('PC')) platformClass = 'platform-pc';
+                else if (platform.includes('PlayStation')) platformClass = 'platform-playstation';
+                else if (platform.includes('Xbox')) platformClass = 'platform-xbox';
+                else if (platform.includes('Nintendo')) platformClass = 'platform-nintendo';
+                
+                platformsHtml += `
+                    <span class="platform-badge ${platformClass}" style="margin-right: 5px; margin-bottom: 5px;">
+                        ${platform}
+                    </span>
+                `;
+            });
+            document.getElementById('modalGamePlatforms').innerHTML = platformsHtml;
+            
+            // Set stores
+            let storesHtml = '<div class="row">';
+            game.stores.forEach(store => {
+                storesHtml += `
+                    <div class="col-md-6 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">${store.name}</h6>
+                                <p class="card-text">Platform: ${store.platform}</p>
+                                <p class="card-text fw-bold">${store.price}</p>
+                                <a href="${store.url}" class="btn btn-sm btn-primary" target="_blank">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            storesHtml += '</div>';
+            document.getElementById('modalGameStores').innerHTML = storesHtml;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('gameDetailsModal'));
+            modal.show();
+        }
+    </script>
+}

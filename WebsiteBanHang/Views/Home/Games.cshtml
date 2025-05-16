@@ -1,0 +1,176 @@
+@model List<Game>
+
+@{
+    ViewData["Title"] = "Games";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="h5 mb-0">Filters</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="BrowseGames" method="get">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">RELEASE YEAR</label>
+                        <select name="year" class="form-select">
+                            <option value="">All Years</option>
+                            @for (int year = DateTime.Now.Year; year >= 1990; year--)
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">PLATFORMS</label>
+                        <select name="platform" class="form-select">
+                            <option value="">All Platforms</option>
+                            <option value="PC">PC</option>
+                            <option value="PlayStation">PlayStation</option>
+                            <option value="Xbox">Xbox</option>
+                            <option value="Nintendo">Nintendo</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">GENRE</label>
+                        <select name="genre" class="form-select">
+                            <option value="">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="RPG">RPG</option>
+                            <option value="Strategy">Strategy</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Racing">Racing</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var game in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 game-card">
+                        <div class="position-relative">
+                            <img src="@game.ImageUrl" class="card-img-top game-image" alt="@game.Title" onerror="this.onerror=null; this.src='/images/game-placeholder.jpg'; this.alt='@game.Title';">
+                            <div class="metascore @(game.MetaScore >= 90 ? "metascore-high" : (game.MetaScore >= 75 ? "metascore-medium" : "metascore-low"))">
+                                @game.MetaScore
+                            </div>
+                            @if (game.MetaScore >= 90)
+                            {
+                                <div class="must-play-badge">Must Play</div>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@game.Title</h5>
+                            <p class="card-text text-muted small">
+                                Released: @(game.ReleaseDate.HasValue ? game.ReleaseDate.Value.ToString("MMM dd, yyyy") : "TBA")<br>
+                                Platform: @await Html.PartialAsync("_PlatformDisplay", game)<br>
+                                Genre: @game.Genre
+                            </p>
+                            <p class="card-text game-description">@(game.Description?.Length > 150 ? game.Description.Substring(0, 150) + "..." : game.Description)</p>
+                            <div class="text-muted small developer-info">
+                                Developer: @game.Developer<br>
+                                Publisher: @game.Publisher
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex justify-content-between">
+                            <a asp-controller="Game" asp-action="Details" asp-route-id="@game.Id" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-info-circle"></i> View Details
+                            </a>
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <a asp-controller="Game" asp-action="Details" asp-route-id="@game.Id" asp-fragment="write-review" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-pencil-alt"></i> Write Review
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Details", "Game", new { id = game.Id })" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-pencil-alt"></i> Write Review
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .game-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.125);
+        overflow: hidden;
+    }
+    
+    .game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .game-image {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .metascore {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        border-radius: 5px;
+    }
+    
+    .metascore-high {
+        background-color: #6c3;
+    }
+    
+    .metascore-medium {
+        background-color: #fc3;
+        color: black;
+    }
+    
+    .metascore-low {
+        background-color: #f00;
+    }
+    
+    .must-play-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #111;
+        color: gold;
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+    
+    .game-description {
+        font-size: 0.9rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+    
+    .developer-info {
+        font-size: 0.8rem;
+        margin-top: 10px;
+    }
+</style> 

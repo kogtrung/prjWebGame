@@ -1,0 +1,12 @@
+﻿@model WebGame.Models.GameCategory
+@if (User.IsInRole("Admin")){
+<h3>Bạn có chắc chắn muốn xoá thể loại: <strong>@Model.Name</strong>?</h3>
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Xoá</button>
+    <a asp-action="Index" class="btn btn-secondary">Huỷ</a>
+</form>
+}
+else{
+<h1>Tính làm gì ?</h1>
+}

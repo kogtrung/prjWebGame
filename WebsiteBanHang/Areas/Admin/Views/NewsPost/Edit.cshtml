@@ -1,0 +1,75 @@
+@model WebGame.Models.NewsPost
+@{
+    ViewData["Title"] = "Cập nhật bài viết";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <h2 class="h3 mb-4 text-gray-800">@ViewData["Title"]</h2>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Thông tin bài viết</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CreatedAt" />
+                <input type="hidden" asp-for="PublishDate" />
+                
+                <div class="form-group mb-3">
+                    <label asp-for="Title" class="control-label">Tiêu đề</label>
+                    <input asp-for="Title" class="form-control text-dark" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="Summary" class="control-label">Tóm tắt</label>
+                    <textarea asp-for="Summary" class="form-control text-dark" rows="3"></textarea>
+                    <span asp-validation-for="Summary" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="GameCategoryId" class="control-label">Thể loại game</label>
+                    <select asp-for="GameCategoryId" class="form-select text-dark" asp-items="ViewBag.GameCategories">
+                        <option value="">-- Chọn thể loại --</option>
+                    </select>
+                    <span asp-validation-for="GameCategoryId" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="ImageUrl" class="control-label">Hình ảnh (URL)</label>
+                    <input asp-for="ImageUrl" class="form-control text-dark" />
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="Content" class="control-label">Nội dung</label>
+                    <textarea asp-for="Content" id="ContentEditor" class="form-control text-dark" rows="10" required></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save mr-1"></i> Lưu thay đổi
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left mr-1"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Add any additional script for editor enhancement here
+        $(document).ready(function() {
+            // Ensure all text inputs have dark text
+            $('input, textarea, select').addClass('text-dark');
+        });
+    </script>
+} 

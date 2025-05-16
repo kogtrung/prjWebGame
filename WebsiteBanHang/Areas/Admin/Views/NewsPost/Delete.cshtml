@@ -1,0 +1,56 @@
+﻿@model WebGame.Models.NewsPost
+@{
+    ViewData["Title"] = "Xóa bài viết";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title text-danger mb-4">
+                <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa bài viết
+            </h3>
+
+            <div class="alert alert-warning">
+                <h5 class="alert-heading">Bạn có chắc chắn muốn xóa bài viết này?</h5>
+                <p class="mb-0">Hành động này không thể hoàn tác.</p>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-3">Tiêu đề</dt>
+                        <dd class="col-sm-9">@Model.Title</dd>
+
+                        <dt class="col-sm-3">Ngày tạo</dt>
+                        <dd class="col-sm-9">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-3">Danh mục</dt>
+                        <dd class="col-sm-9">@Model.GameCategory?.Name</dd>
+
+                        <dt class="col-sm-3">Nội dung tóm tắt</dt>
+                        <dd class="col-sm-9">@Model.Summary</dd>
+                    </dl>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="col-md-4">
+                        <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded" />
+                    </div>
+                }
+            </div>
+
+            <form asp-action="DeleteConfirmed" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Xác nhận xóa
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
