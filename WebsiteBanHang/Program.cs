@@ -55,6 +55,15 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+// Thêm xác thực Google
+builder.Services.AddAuthentication()
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "GOOGLE_CLIENT_ID";
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "GOOGLE_CLIENT_SECRET";
+        googleOptions.CallbackPath = "/signin-google";
+    });
+
 // Configure AutoMapper
 builder.Services.AddAutoMapper(typeof(WebGame.Services.MappingProfile));
 
