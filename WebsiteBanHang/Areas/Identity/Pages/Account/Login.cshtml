@@ -37,6 +37,22 @@
 
                     <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
 
+                    @if (Model.ExternalLogins != null && Model.ExternalLogins.Count > 0)
+                    {
+                        <div class="text-center mb-3">
+                            <span>Or login with</span>
+                        </div>
+                        @foreach (var provider in Model.ExternalLogins)
+                        {
+                            <form method="post" asp-page="./ExternalLogin" asp-route-provider="@provider.Name" asp-route-returnUrl="@Model.ReturnUrl" class="mb-2">
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="width:20px; margin-right:8px;" />
+                                    Login with @provider.DisplayName
+                                </button>
+                            </form>
+                        }
+                    }
+
                     <div class="text-center">
                         <p>Don't have an account? <a asp-page="./Register">Register</a></p>
                     </div>

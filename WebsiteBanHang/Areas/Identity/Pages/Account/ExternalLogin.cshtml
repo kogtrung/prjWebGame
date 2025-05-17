@@ -1,0 +1,29 @@
+@page
+@model WebGame.Areas.Identity.Pages.Account.ExternalLoginModel
+@{
+    ViewData["Title"] = "External Login";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2>@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger">@Model.ErrorMessage</div>
+                    }
+                    else
+                    {
+                        <div class="text-center">
+                            <span>Processing external login...</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
